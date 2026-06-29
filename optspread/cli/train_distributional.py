@@ -12,9 +12,10 @@ from optspread.agents.distributional.risk import RiskMeasure
 from optspread.agents.distributional.trainer import DistributionalTrainer
 from optspread.eval.evaluator import Evaluator
 from optspread.eval.metrics import MetricSuite
+from optspread.training.curriculum_factory import wave_factory
 from optspread.training.harness import TrainHarness
 from optspread.training.logging import MetricLogger
-from optspread.training.phase2 import phase2_factory, phase2_risk_reward
+from optspread.training.phase2 import phase2_risk_reward
 from optspread.training.seeding import run_dir
 
 
@@ -23,6 +24,13 @@ def main() -> None:
     parser.add_argument("--algo", choices=("qrdqn", "iqn"), default="qrdqn")
     parser.add_argument("--run-root", type=Path, default=Path("runs"))
     parser.add_argument("--run-name", default="phase3_distributional_wave0")
+    parser.add_argument("--wave", type=int, default=0, help="Curriculum wave (0 fair-IV, 1 VRP).")
+    parser.add_argument(
+        "--warm-start",
+        type=Path,
+        default=None,
+        help="Checkpoint to warm-start from (previous wave).",
+    )
     parser.add_argument("--seed", type=int, default=1)
     parser.add_argument("--env-seed", type=int, default=30_000)
     parser.add_argument("--eval-seed-start", type=int, default=90_000)
@@ -37,7 +45,7 @@ def main() -> None:
     args = parser.parse_args()
 
     reward = phase2_risk_reward()
-    factory = phase2_factory(reward=reward, with_costs=True)
+    factory = wave_factory(args.wave, reward=reward, with_costs=True)
     risk = RiskMeasure.mean() if args.risk == "mean" else RiskMeasure.cvar(args.cvar_alpha)
     cfg: QRDQNConfig | IQNConfig
     agent: QRDQNAgent | IQNAgent
@@ -62,6 +70,12 @@ def main() -> None:
         )
         agent = IQNAgent(factory.obs_dim, factory.n_actions, cfg, risk_measure=risk)
 
+    if args.warm_start is not None:
+        agent.load(args.warm_start)
+        # ``load`` restores the checkpoint's risk measure; re-apply the risk
+        # selected for THIS wave so warm-starting transfers weights only.
+        agent.risk_measure = risk
+
     trainer = DistributionalTrainer(agent, factory, cfg, env_seed=args.env_seed)
     eval_seeds = tuple(range(args.eval_seed_start, args.eval_seed_start + args.eval_episodes))
     evaluator = Evaluator(
@@ -69,13 +83,21 @@ def main() -> None:
     )
     out_dir = run_dir(args.run_root, f"{args.run_name}_{args.algo}_{args.risk}", args.seed)
     logger = MetricLogger(out_dir / "tb", enabled=not args.no_tensorboard)
+    # The no-edge (FLAT-dominant) gate only applies to Wave 0; later waves are
+    # expected to trade, so gating on FLAT-dominance there would be wrong.
+    gate_with_costs = True if args.wave == 0 else None
+    flat_threshold = 0.8 if args.wave == 0 else None
     result = TrainHarness(
         agent=agent,
         trainer=trainer,
         evaluator=evaluator,
         run_dir=out_dir,
         logger=logger,
-    ).run(gate_with_costs=True, flat_threshold=0.8, artifact_prefix=args.algo)
+    ).run(
+        gate_with_costs=gate_with_costs,
+        flat_threshold=flat_threshold,
+        artifact_prefix=args.algo,
+    )
     print(f"checkpoint: {result.checkpoint_path}")
     print(f"eval report: {result.report_path}")
     print(

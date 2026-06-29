@@ -9,10 +9,10 @@ from optspread.agents.ppo.ppo_agent import PPOAgent
 from optspread.agents.ppo.trainer import PPOTrainer
 from optspread.eval.evaluator import Evaluator
 from optspread.eval.metrics import MetricSuite
+from optspread.training.curriculum_factory import wave_factory
 from optspread.training.harness import TrainHarness
 from optspread.training.logging import MetricLogger
 from optspread.training.phase2 import (
-    phase2_factory,
     phase2_ppo_config,
     phase2_risk_reward,
     pure_pnl_reward,
@@ -24,6 +24,13 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Train PPO on Wave-0 fair-IV GBM")
     parser.add_argument("--run-root", type=Path, default=Path("runs"))
     parser.add_argument("--run-name", default="phase2_ppo_wave0")
+    parser.add_argument("--wave", type=int, default=0, help="Curriculum wave (0 fair-IV, 1 VRP).")
+    parser.add_argument(
+        "--warm-start",
+        type=Path,
+        default=None,
+        help="Checkpoint to warm-start from (previous wave).",
+    )
     parser.add_argument("--seed", type=int, default=13)
     parser.add_argument("--env-seed-start", type=int, default=10_000)
     parser.add_argument("--eval-seed-start", type=int, default=70_000)
@@ -46,7 +53,7 @@ def main() -> None:
     args = parser.parse_args()
 
     reward = phase2_risk_reward() if args.reward_preset == "phase2-risk" else pure_pnl_reward()
-    factory = phase2_factory(reward=reward, with_costs=not args.no_costs)
+    factory = wave_factory(args.wave, reward=reward, with_costs=not args.no_costs)
     cfg = phase2_ppo_config(
         seed=args.seed,
         total_timesteps=args.total_timesteps,
@@ -57,6 +64,8 @@ def main() -> None:
         target_kl=args.target_kl,
     )
     agent = PPOAgent(factory.obs_dim, factory.n_actions, cfg)
+    if args.warm_start is not None:
+        agent.load(args.warm_start)
     trainer = PPOTrainer(agent, factory, cfg, env_base_seed=args.env_seed_start)
     eval_seeds = tuple(range(args.eval_seed_start, args.eval_seed_start + args.eval_episodes))
     train_seed_anchors = tuple(range(args.env_seed_start, args.env_seed_start + cfg.num_envs))
@@ -68,8 +77,10 @@ def main() -> None:
     )
     out_dir = run_dir(args.run_root, args.run_name, args.seed)
     logger = MetricLogger(out_dir / "tb", enabled=not args.no_tensorboard)
-    gate_with_costs = None if args.no_gate else not args.no_costs
-    flat_threshold = None if args.no_gate else args.flat_threshold
+    # The no-edge (FLAT-dominant) gate only applies to Wave 0; later waves trade.
+    skip_gate = args.no_gate or args.wave != 0
+    gate_with_costs = None if skip_gate else not args.no_costs
+    flat_threshold = None if skip_gate else args.flat_threshold
     result = TrainHarness(
         agent=agent,
         trainer=trainer,

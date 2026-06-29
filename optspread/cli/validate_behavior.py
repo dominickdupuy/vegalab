@@ -11,12 +11,9 @@ from optspread.agents.base import Agent
 from optspread.agents.distributional.iqn_agent import IQNAgent
 from optspread.agents.distributional.qrdqn_agent import QRDQNAgent
 from optspread.agents.ppo.ppo_agent import PPOAgent
-from optspread.config import EnvConfig, GBMConfig
-from optspread.curriculum.waves import wave1_spec
-from optspread.envs.builder import EnvBundle
 from optspread.eval.rollout import collect_rollout_trace, wave1_credit_vrp_statistic
+from optspread.training.curriculum_factory import wave_factory
 from optspread.training.env_factory import EnvFactory
-from optspread.training.phase2 import phase2_risk_reward
 
 
 def main() -> None:
@@ -75,19 +72,7 @@ def _load_agent(kind: str, checkpoint: Path, device: str) -> Agent:
 
 
 def _factory_for_wave(wave: int, episode_length: int) -> EnvFactory:
-    cfg = GBMConfig(n_days=episode_length)
-    if wave == 1:
-        spec = wave1_spec(cfg)
-    else:
-        raise ValueError(f"unsupported wave: {wave}")
-    return EnvFactory(
-        EnvBundle(
-            env=EnvConfig(episode_length=episode_length),
-            gbm=cfg,
-            reward=phase2_risk_reward(),
-            generator_factory=spec.make_generator,
-        )
-    )
+    return wave_factory(wave, episode_length=episode_length)
 
 
 if __name__ == "__main__":
