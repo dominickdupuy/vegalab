@@ -8,5 +8,5 @@
 __pycache__/
 *.py[cod]
 runs/
-data/
+/data/
 artifacts/
