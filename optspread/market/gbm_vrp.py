@@ -21,11 +21,20 @@ class GBMVRPGenerator:
         sigma: float | None = None,
         vrp_vol_premium: float = 0.04,
         sampler: ParamSampler | None = None,
+        warmup_days: int = 21,
     ) -> None:
         self.config = config
         self.base_sigma = config.sigma if sigma is None else sigma
         self.base_vrp_vol_premium = vrp_vol_premium
         self.sampler = sampler
+        # Days of path simulated silently before the episode so realized vol (and
+        # therefore the observable ``vrp`` feature = implied^2 - realized^2) is
+        # established at the agent's FIRST decision. Without this, realized vol is
+        # undefined at entry, VRP is unobservable, and the agent cannot condition
+        # its credit-selling on the (hidden-until-mid-episode) premium -- it
+        # rationally stays flat. The warmup makes VRP an observable signal the
+        # agent can learn from (a teaching aid, not a hidden-state leak).
+        self.warmup_days = warmup_days
         self._rng: np.random.Generator | None = None
         self._spot = config.spot0
         self._day = 0
@@ -51,7 +60,25 @@ class GBMVRPGenerator:
         self._day = 0
         self._log_returns = []
         self._iv_history = []
+        self._run_warmup()
         return self._snapshot()
+
+    def _run_warmup(self) -> None:
+        """Evolve the path silently so realized vol is established at entry.
+
+        Appends ``warmup_days`` physical log-returns (and drifts the spot) without
+        advancing the episode clock, so the first observation already has a
+        meaningful trailing realized vol and thus an observable VRP feature.
+        """
+        if self._rng is None or self.warmup_days <= 0:
+            return
+        dt = 1.0 / self.config.trading_days_per_year
+        sigma = self._physical_sigma
+        for _ in range(self.warmup_days):
+            z = float(self._rng.standard_normal())
+            log_ret = -0.5 * sigma * sigma * dt + sigma * np.sqrt(dt) * z
+            self._spot *= float(np.exp(log_ret))
+            self._log_returns.append(log_ret)
 
     def step(self) -> MarketSnapshot:
         if self._rng is None:
