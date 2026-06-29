@@ -57,12 +57,44 @@ Two extraction bugs were fixed to make this work:
 - Walk-forward correctness: **PASS** — purge and embargo behavior is tested.
 - Baselines: **SCAFFOLDED** — mechanics are represented; published-index
   reconciliation requires Cboe/OptionMetrics sample data.
-- Zero-shot/fine-tuned real OOS: **PIPELINE PROVEN / HEADLINE PENDING** — the
-  real-data evaluation path runs end-to-end; the headline tail-adjusted OOS
-  comparison still requires the Phase-4 curriculum checkpoint (Waves 1–6), which
-  has not been trained.
-- Sim-to-real gap and cost stress: **PENDING** — requires the curriculum
-  checkpoint and real evaluation output.
+- Zero-shot real OOS: **RUN (Wave-1 agent, preliminary)** — `optspread.cli.evaluate_real`
+  runs the full walk-forward zero-shot evaluation end-to-end on the real SPX
+  surface (frozen agent, no gradient steps; purge+embargo; one episode per test
+  fold; causal warmup lead-in). See the sim-to-real finding below. The HEADLINE
+  tail-adjusted comparison still requires the full Phase-4 curriculum checkpoint
+  (Waves 2–6 not trained) and fine-tuning.
+- Sim-to-real gap and cost stress: **GAP IDENTIFIED** — see below; cost-stress
+  tooling added to `evaluate_real` (`--cost-mult`).
+
+## Real zero-shot evaluation — sim-to-real finding (2026-06-29)
+
+Zero-shot walk-forward on real SPX (Wave-1 IQN/CVaR agent, seed 711), tail-adjusted:
+
+| Policy | Sharpe | Sortino | CVaR95 | MaxDD | Mean PnL | PnL CI vs FLAT |
+|---|---|---|---|---|---|---|
+| IQN/CVaR | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | [0, 0] |
+| FLAT | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | — |
+| VRP heuristic | −0.43 | −0.62 | −876 | 0.55 | −9.0 | [−17.7, −0.3] |
+
+**The CVaR agent is 100% FLAT on real data** — and this is a precisely-diagnosed
+sim-to-real gap, not a leak or bug:
+
+- Wave 1's VRP premium was deliberately **exaggerated for teachability** (a
+  realistic ~0.02–0.08 edge is unlearnable — the agent collapses to flat). The
+  agent therefore learned to sell only when the observable `vrp` feature is large
+  (~0.05–0.09).
+- **Real SPX `vrp` is much smaller**: mean +0.006, median +0.006, p90 +0.026,
+  max +0.10; only **2.6%** of days exceed 0.05 (positive 80% of the time, but
+  small). So the agent almost never sees "rich enough" → it stays flat
+  (reinforced by CVaR tail-aversion). No edge, but no harm.
+- The naive VRP heuristic *does* trade and **loses** (−0.43 Sharpe, mean −9, CI
+  below 0) — indiscriminate real credit-selling is penalised; the conservative
+  agent and FLAT correctly avoid it.
+
+This is the textbook teachability-vs-realism gap and motivates the brief's
+**fine-tuning** step (re-calibrate the threshold to the real VRP scale) — to be
+run next, leading with this zero-shot result. If fine-tuning cannot bridge it,
+the brief's **sim-to-real gap-study** reframing applies (still a contribution).
 
 ## Local WRDS export entry point
 

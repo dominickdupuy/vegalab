@@ -82,10 +82,18 @@ def main() -> None:
     parser.add_argument("--embargo", type=int, default=21)
     parser.add_argument("--warmup", type=int, default=21)
     parser.add_argument("--max-folds", type=int, help="Optional smoke-test fold cap.")
+    parser.add_argument(
+        "--cost-mult",
+        dest="cost_mults",
+        action="append",
+        type=float,
+        help="Transaction-cost multiplier; repeat for stress runs.",
+    )
     parser.add_argument("--out", type=Path, default=Path("runs/phase5_real_eval.json"))
     args = parser.parse_args()
 
     _validate_args(args)
+    cost_mults = _cost_multipliers(args)
     rows = load_surface_csv(args.surface_csv)
     folds = WalkForwardSplitter(
         train_size=args.train_size,
@@ -102,30 +110,41 @@ def main() -> None:
     policies = [(name, _load_policy(name, args.checkpoint, args.device)) for name in policy_names]
 
     n_policies = len(policies)
-    per_policy: dict[str, object] = {}
-    pooled_returns: dict[str, FloatArray] = {}
-    for name, policy in policies:
-        reports: list[EvalReport] = []
-        fold_payloads: list[dict[str, object]] = []
-        for fold in folds:
-            report = _run_fold(policy, rows, fold, args.warmup)
-            reports.append(report)
-            fold_payloads.append(_fold_payload(report, rows, fold))
-        pooled = _pool_returns(reports)
-        pooled_returns[name] = pooled
-        per_policy[name] = {
-            "label": "REAL zero-shot frozen-agent evaluation",
-            "per_fold": fold_payloads,
-            "aggregate": _aggregate_payload(reports, pooled, n_policies),
-        }
+    cost_stress: dict[str, object] = {}
+    edge_by_policy: dict[str, list[tuple[float, float]]] = {}
+    for cost_mult in cost_mults:
+        per_policy: dict[str, object] = {}
+        pooled_returns: dict[str, FloatArray] = {}
+        for name, policy in policies:
+            reports: list[EvalReport] = []
+            fold_payloads: list[dict[str, object]] = []
+            for fold in folds:
+                report = _run_fold(policy, rows, fold, args.warmup, cost_mult)
+                reports.append(report)
+                fold_payloads.append(_fold_payload(report, rows, fold))
+            pooled = _pool_returns(reports)
+            pooled_returns[name] = pooled
+            per_policy[name] = {
+                "label": "REAL zero-shot frozen-agent evaluation",
+                "per_fold": fold_payloads,
+                "aggregate": _aggregate_payload(reports, pooled, n_policies),
+            }
 
-    comparisons = _comparison_payloads(pooled_returns, policy_names)
+        comparisons = _comparison_payloads(pooled_returns, policy_names)
+        cost_stress[_cost_label(cost_mult)] = {
+            "per_policy": per_policy,
+            "comparisons": comparisons,
+        }
+        _record_rl_edges(edge_by_policy, policy_names, pooled_returns, cost_mult)
+
+    break_even = _break_even_payload(edge_by_policy)
     payload: dict[str, object] = {
         "config": {
             "label": "REAL data, zero-shot, frozen agents, no training",
             "surface_csv": str(args.surface_csv),
             "checkpoint": str(args.checkpoint) if args.checkpoint is not None else None,
             "policies": policy_names,
+            "cost_multipliers": cost_mults,
             "train_size": args.train_size,
             "test_size": args.test_size,
             "purge": args.purge,
@@ -138,14 +157,26 @@ def main() -> None:
             "frozen_agent": True,
             "zero_gradient_steps": True,
         },
-        "per_policy": per_policy,
-        "comparisons": comparisons,
+        "cost_stress": cost_stress,
+        "break_even": break_even,
     }
     args.out.parent.mkdir(parents=True, exist_ok=True)
     args.out.write_text(json.dumps(payload, indent=2), encoding="utf-8")
 
     print(f"REAL zero-shot frozen-agent walk-forward; wrote {args.out}")
-    print(_table(policy_names, per_policy, comparisons))
+    for cost_mult in cost_mults:
+        cost_payload = cost_stress[_cost_label(cost_mult)]
+        if not isinstance(cost_payload, dict):
+            raise TypeError("cost stress payload must be a dict")
+        per_policy_payload = cost_payload["per_policy"]
+        if not isinstance(per_policy_payload, dict):
+            raise TypeError("per-policy payload must be a dict")
+        comparisons_payload = cost_payload["comparisons"]
+        if not isinstance(comparisons_payload, dict):
+            raise TypeError("comparisons payload must be a dict")
+        print(f"=== cost x{_cost_label(cost_mult)} ===")
+        print(_table(policy_names, per_policy_payload, comparisons_payload))
+    print(_break_even_note(break_even))
 
 
 def _validate_args(args: argparse.Namespace) -> None:
@@ -159,6 +190,14 @@ def _validate_args(args: argparse.Namespace) -> None:
         raise SystemExit("--purge, --embargo, and --warmup must be non-negative")
     if args.max_folds is not None and args.max_folds <= 0:
         raise SystemExit("--max-folds must be positive when provided")
+    if args.cost_mults is not None and any(cost_mult < 0.0 for cost_mult in args.cost_mults):
+        raise SystemExit("--cost-mult must be non-negative")
+
+
+def _cost_multipliers(args: argparse.Namespace) -> list[float]:
+    if args.cost_mults is None:
+        return [1.0]
+    return _dedupe_floats(args.cost_mults)
 
 
 def _policy_names(args: argparse.Namespace) -> list[str]:
@@ -194,6 +233,16 @@ def _dedupe(items: list[str]) -> list[str]:
     return out
 
 
+def _dedupe_floats(items: list[float]) -> list[float]:
+    seen: set[float] = set()
+    out: list[float] = []
+    for item in items:
+        if item not in seen:
+            seen.add(item)
+            out.append(item)
+    return out
+
+
 def _load_policy(kind: str, checkpoint: Path | None, device: str) -> Agent:
     if kind == "flat":
         return FlatAgent()
@@ -210,7 +259,13 @@ def _load_policy(kind: str, checkpoint: Path | None, device: str) -> Agent:
     raise ValueError(f"unsupported policy: {kind}")
 
 
-def _run_fold(agent: Agent, rows: list[SurfaceRow], fold: Fold, warmup: int) -> EvalReport:
+def _run_fold(
+    agent: Agent,
+    rows: list[SurfaceRow],
+    fold: Fold,
+    warmup: int,
+    cost_mult: float,
+) -> EvalReport:
     test_rows = rows[fold.test_start : fold.test_end]
     lead_in = rows[max(0, fold.test_start - warmup) : fold.test_start]
     fold_rows = lead_in + test_rows
@@ -225,7 +280,7 @@ def _run_fold(agent: Agent, rows: list[SurfaceRow], fold: Fold, warmup: int) -> 
         EnvBundle(
             env=EnvConfig(episode_length=n_steps),
             gbm=gbm,
-            cost=CostConfig(),
+            cost=_scaled_cost_config(cost_mult),
             reward=curriculum_reward(),
             generator_factory=generator_factory,
         )
@@ -233,6 +288,16 @@ def _run_fold(agent: Agent, rows: list[SurfaceRow], fold: Fold, warmup: int) -> 
     return Evaluator(factory, eval_seeds=(0,), metrics=MetricSuite()).run(
         agent,
         deterministic=True,
+    )
+
+
+def _scaled_cost_config(cost_mult: float) -> CostConfig:
+    defaults = CostConfig()
+    return CostConfig(
+        half_spread_bps=defaults.half_spread_bps * cost_mult,
+        min_cost_per_leg=defaults.min_cost_per_leg * cost_mult,
+        otm_widening=defaults.otm_widening,
+        multiplier=defaults.multiplier,
     )
 
 
@@ -304,6 +369,71 @@ def _comparison_payloads(
             policy_comparisons["vs_vrp_heuristic_mean_pnl_ci"] = _paired_ci(returns, heuristic)
         comparisons[name] = policy_comparisons
     return comparisons
+
+
+def _record_rl_edges(
+    edge_by_policy: dict[str, list[tuple[float, float]]],
+    policy_names: list[str],
+    pooled_returns: dict[str, FloatArray],
+    cost_mult: float,
+) -> None:
+    flat = pooled_returns.get("flat")
+    if flat is None:
+        return
+    flat_mean = float(flat.mean()) if flat.size else 0.0
+    for name in policy_names:
+        if name not in RL_POLICIES:
+            continue
+        returns = pooled_returns[name]
+        mean_edge = (float(returns.mean()) if returns.size else 0.0) - flat_mean
+        edge_by_policy.setdefault(name, []).append((cost_mult, mean_edge))
+
+
+def _break_even_payload(edge_by_policy: dict[str, list[tuple[float, float]]]) -> object:
+    if not edge_by_policy:
+        return None
+    per_policy: dict[str, object] = {}
+    for name, edges in edge_by_policy.items():
+        ordered = sorted(edges, key=lambda item: item[0])
+        break_even = next((cost_mult for cost_mult, edge in ordered if edge <= 0.0), None)
+        per_policy[name] = {
+            "cost_mult": break_even,
+            "edge_mean_pnl_vs_flat": {_cost_label(cost_mult): edge for cost_mult, edge in ordered},
+        }
+    return {
+        "definition": "Smallest tested cost multiplier where pooled mean PnL edge vs FLAT <= 0.",
+        "per_policy": per_policy,
+    }
+
+
+def _break_even_note(break_even: object) -> str:
+    if break_even is None:
+        return "Break-even cost: n/a (no RL agent evaluated)."
+    if not isinstance(break_even, dict):
+        raise TypeError("break-even payload must be a dict")
+    per_policy = break_even["per_policy"]
+    if not isinstance(per_policy, dict):
+        raise TypeError("break-even per-policy payload must be a dict")
+    notes: list[str] = []
+    for name, payload in per_policy.items():
+        if not isinstance(name, str):
+            raise TypeError("break-even policy key must be a string")
+        if not isinstance(payload, dict):
+            raise TypeError("break-even policy payload must be a dict")
+        cost_mult = payload["cost_mult"]
+        edges = payload["edge_mean_pnl_vs_flat"]
+        if not isinstance(edges, dict):
+            raise TypeError("break-even edge payload must be a dict")
+        max_cost_mult = max(float(label) for label in edges)
+        if cost_mult is None:
+            notes.append(f"{name} still beats FLAT through x{_cost_label(max_cost_mult)}")
+        else:
+            notes.append(f"{name} stops beating FLAT at x{_cost_label(_payload_float(cost_mult))}")
+    return "Break-even cost: " + "; ".join(notes) + "."
+
+
+def _cost_label(cost_mult: float) -> str:
+    return str(float(cost_mult))
 
 
 def _paired_ci(a: FloatArray, b: FloatArray) -> list[float]:
