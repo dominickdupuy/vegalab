@@ -52,6 +52,35 @@ def test_real_generator_is_drop_in_for_shared_evaluator() -> None:
     assert report.mean_pnl == 0.0
 
 
+def test_real_generator_warmup_seeds_history_before_first_tradeable_row() -> None:
+    spots = [100.0, 102.0, 101.0, 105.0, 104.0, 107.0]
+    rows = [
+        SurfaceRow(
+            str(i),
+            spot,
+            IVSurface.flat(sigma=0.2, spot=spot, r=0.0, q=0.0, t=10_000 + i),
+        )
+        for i, spot in enumerate(spots)
+    ]
+    replay = RealDataReplay(rows, GBMConfig(n_days=2), warmup_rows=3)
+
+    snapshot = replay.reset(np.random.default_rng(0))
+
+    assert snapshot.chain.spot == spots[3]
+    assert snapshot.t == 0
+    assert snapshot.chain.t == 0
+    assert snapshot.regime_features["realized_vol"] != 0.2
+    assert snapshot.regime_features["vrp"] != 0.0
+    assert not replay.done
+
+    assert replay.step().chain.spot == spots[4]
+    assert not replay.done
+    next_snapshot = replay.step()
+    assert next_snapshot.chain.spot == spots[5]
+    assert next_snapshot.t == 2
+    assert replay.done
+
+
 def test_walkforward_purge_embargo_and_statistics() -> None:
     folds = WalkForwardSplitter(train_size=10, test_size=5, purge=2, embargo=1).split(25)
     assert folds[0].train_end == 10
