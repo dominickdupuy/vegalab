@@ -68,10 +68,13 @@ Primary agent (pre-committed): the **CVaR / IQN** distributional agent. PPO and 
 - **Pre-register the behavioral prediction and its test BEFORE the training run** (timestamped commit). A prediction written after results is not a test.
 - **Warm-start each wave from the previous checkpoint; rehearse earlier waves; re-evaluate for catastrophic forgetting.**
 - **VRP is a P-vs-Q measure difference** (simulate under P, price the surface under a VRP-adjusted Q), not a bolt-on.
-- **Current Phase-4 status:** `phases/PHASE4_GATE_REPORT.md` records the surface
-  foundation, Wave 1 generator validation (`GV_1`), and BV_1 validation tooling
-  as present. Do not start Wave 2 until Wave 1 trained-agent behavioral
-  validation (`BV_1`) and forgetting check (`FF_1`) are passed.
+- **Current Phase-4 status:** **Wave 1 COMPLETE** — `GV_1`, `BV_1`, and `FF_1` all
+  pass for an ensemble of trained PPO and IQN/CVaR agents (BV_1
+  corr(credit,vrp) ≈ +0.72 vs the 0.10 threshold; FF_1 no-edge holds on Wave 0).
+  See `phases/PHASE4_GATE_REPORT.md` for the recipe (MTM-only curriculum reward,
+  risk-neutral bootstrap with CVaR at deployment, teachable variable-sign VRP,
+  warmup so VRP is observable at entry, Wave-1 trained from scratch). Wave 2 may
+  now begin — add one feature at a time; expect the same learnability levers.
 
 ### Frozen-agent invariants
 - **Held-out generalization (Phase 6) and distillation (Phase 7) take ZERO gradient steps** on the held-out / distillation data. The agent is frozen. Assert it.

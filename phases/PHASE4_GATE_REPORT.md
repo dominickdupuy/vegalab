@@ -2,7 +2,8 @@
 
 Generated: 2026-06-28T22:10:00
 
-Overall implementation status: **FOUNDATION + WAVE 1 GV PASS + BV TOOLING PASS**
+Overall implementation status: **WAVE 1 COMPLETE — GV_1, BV_1, FF_1 all PASS**
+(ensemble of trained PPO and IQN/CVaR agents; Waves 2–6 not started)
 
 ## Implemented
 
@@ -34,15 +35,55 @@ python -m optspread.cli.validate_generators --wave 1
 The automated test `tests/test_vrp_invariant.py` validates that
 `mean(IV^2 - realized^2)` is positive under the configured premium.
 
+## BV_1 — Wave 1 Behavioral Validation (trained agents)
+
+Status: **PASS** (ensemble, deterministic eval; CVaR deployment for IQN)
+
+Pre-registered prediction (`curriculum/predictions.py`, committed before training):
+`corr(credit_indicator, vrp) > 0.10`, returns positive but bounded.
+
+| Agent | BV_1 corr (mean ± std) | FF_1 (Wave-0 no-edge) |
+|---|---|---|
+| IQN/CVaR (primary) | **+0.72 ± 0.03** | PASS — flat 1.00, mean PnL 0 |
+| PPO | **+0.72 ± 0.00** | PASS — flat 0.89, mean PnL < 0 (no edge) |
+
+Both far exceed the 0.10 threshold; the CVaR agent trades less than the
+risk-neutral policy (tail-averse) yet still harvests VRP precisely when the
+observable VRP feature is positive; mean episode P&L is positive but bounded.
+Per-seed/aggregate detail in `runs/phase4_wave1_bv1_ff1.json`.
+
+### What it took (the recipe — see also the per-wave learnability note)
+
+Getting BV_1 to pass surfaced and fixed several issues (env/generator/pricing
+were verified CORRECT throughout — fair-IV Wave 0 is zero raw-EV, Wave 1 short
+premium is genuinely +EV):
+
+1. **Curriculum reward = MTM P&L only** (`curriculum_reward()`); tail-aversion is
+   agent-side. The Wave-0 gate's env CVaR penalty dominates the edge ~8x and
+   forces FLAT. (A DifferentialSharpe term was evaluated and rejected — it rewards
+   trading on the no-edge Wave 0, breaking the no-edge invariant.)
+2. **Risk-neutral bootstrap** for the distributional agent
+   (`DistributionalConfig.bootstrap_risk="mean"`), CVaR only at deployment. The
+   nested CVaR-greedy bootstrap causes "blindness to success": the agent collapses
+   to 100% FLAT and never learns the +EV trade.
+3. **Teachable, variable-sign VRP** prior (`U(-0.04, 0.18)`): exaggerated for
+   learnability (a realistic ~0.02-0.08 edge is too weak/noisy — both PPO and IQN
+   collapse to flat); spanning zero so conditional sell-when-rich behavior is
+   optimal (otherwise the agent sells indiscriminately and corr ~ 0.05 < 0.10).
+4. **Warmup** (`GBMVRPGenerator.warmup_days=21`): the path runs silently before the
+   episode so realized vol — and thus the observable `vrp` feature — is meaningful
+   at the first decision. Without it VRP is unobservable at entry and the agent
+   rationally stays flat. (A teaching aid, not a hidden-state leak.)
+5. **Wave 1 trained from scratch**, not warm-started from the deliberately-FLAT
+   Wave-0 checkpoint (which biases hard toward "do nothing"). Warm-start should be
+   reinstated for later waves whose previous agent already trades.
+
 ## Pending Phase-4 Gates
 
-- BV_1: train PPO and distributional agents on Wave 1 and validate that
-  credit-structure frequency rises with the VRP feature via
-  `python -m optspread.cli.validate_behavior --wave 1 ...`.
-- FF_1: re-evaluate Wave 0 after Wave 1 training to rule out catastrophic
-  forgetting.
 - Waves 2–6: not started. Per the Phase 4 brief, these should be added one at a
-  time only after GV/BV/FF pass for the current wave.
+  time only after GV/BV/FF pass for the current wave. Expect the same
+  learnability levers (observable feature, teachable signal strength, risk-neutral
+  bootstrap) to be needed.
 
 ## Validation
 
