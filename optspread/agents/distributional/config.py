@@ -20,6 +20,13 @@ class DistributionalConfig(BaseModel):
     epsilon_decay_steps: int = Field(default=50_000, gt=0)
     cvar_alpha: float = Field(default=0.05, gt=0.0, le=1.0)
     behavior_risk: str = "mean"
+    # Risk measure used for the BOOTSTRAP target's next-action selection. "mean"
+    # learns the return distribution under a risk-neutral greedy policy and applies
+    # CVaR only at deployment (agent.risk_measure) -- this avoids the nested
+    # CVaR-greedy "blindness to success" that otherwise collapses the agent to
+    # FLAT and never learns a +EV trade. "cvar" recovers the nested (time-
+    # consistent but conservative) iterated-CVaR bootstrap.
+    bootstrap_risk: str = "mean"
     hidden_sizes: tuple[int, ...] = (64, 64)
     huber_kappa: float = Field(default=1.0, gt=0.0)
     norm_obs: bool = True

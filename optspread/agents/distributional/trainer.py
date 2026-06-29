@@ -69,6 +69,12 @@ class DistributionalTrainer:
         self.rng = np.random.default_rng(config.seed)
         self.optimizer = torch.optim.Adam(self._parameters(), lr=config.learning_rate)
         self.replay = UniformReplayBuffer(config.replay_size, agent.obs_dim)
+        # The bootstrap target's next-action selection risk (see config docstring).
+        self._target_risk = (
+            RiskMeasure.mean()
+            if config.bootstrap_risk == "mean"
+            else RiskMeasure.cvar(config.cvar_alpha)
+        )
 
     def train(self) -> list[DistributionalUpdateStats]:
         cfg = self.config
@@ -146,7 +152,7 @@ class DistributionalTrainer:
             pred = pred_all[torch.arange(actions.shape[0], device=self.agent.device), actions]
             with torch.no_grad():
                 next_actions = self.agent.greedy_actions(
-                    next_obs, risk=self.agent.risk_measure, use_target=True
+                    next_obs, risk=self._target_risk, use_target=True
                 )
                 next_all = self.agent.quantiles(next_obs, use_target=True)
                 next_q = next_all[
@@ -164,7 +170,7 @@ class DistributionalTrainer:
             pred = pred_all[torch.arange(actions.shape[0], device=self.agent.device), actions]
             with torch.no_grad():
                 next_actions = self.agent.greedy_actions(
-                    next_obs, risk=self.agent.risk_measure, use_target=True
+                    next_obs, risk=self._target_risk, use_target=True
                 )
                 target_taus = torch.rand(
                     (actions.shape[0], self.config.n_target_quantiles), device=self.agent.device

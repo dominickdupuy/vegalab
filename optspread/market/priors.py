@@ -20,16 +20,20 @@ class UniformPrior(BaseModel):
 
 class GBMVRPPriors(BaseModel):
     sigma: UniformPrior = Field(default_factory=lambda: UniformPrior(low=0.12, high=0.30))
-    # VRP-premium prior is deliberately exaggerated for TEACHABILITY. Wave 1's job
-    # is to teach "sell premium when implied vol is rich"; a realistic premium
-    # (~0.02-0.08 vol points, episode Sharpe ~0.6) is too weak/noisy versus the
-    # zero-variance FLAT action for PPO or IQN to learn within budget (both
-    # collapse to flat). A 0.25 premium is learned cleanly in 40k steps. The range
-    # below spans the learnability threshold so the agent learns a CONDITIONAL
-    # policy (sell more when the observed VRP feature is higher), which BV_1
-    # measures as corr(credit_indicator, vrp) > 0. Realistic VRP magnitudes return
-    # at Phase 5 on real OptionMetrics data.
-    vrp_vol_premium: UniformPrior = Field(default_factory=lambda: UniformPrior(low=0.06, high=0.20))
+    # VRP-premium prior spans ZERO so Wave 1 presents a VARIABLE-SIGN VRP regime:
+    # negative-premium episodes (implied < realized) make selling premium a losing
+    # trade, so the agent must CONDITION on VRP -- sell when rich, refrain when
+    # cheap. This is what makes corr(credit_indicator, vrp) > 0 (BV_1) genuinely
+    # optimal rather than indiscriminate selling. The magnitude is exaggerated for
+    # TEACHABILITY: a realistic premium (~0.02-0.08, episode Sharpe ~0.6) is too
+    # weak/noisy versus the zero-variance FLAT action for PPO or IQN to learn
+    # within budget (both collapse to flat); a strong edge is learned in ~40k
+    # steps. Realistic VRP magnitudes return at Phase 5 on real OptionMetrics data.
+    # Mean premium stays positive (GV_1: mean VRP > 0). implied_sigma = sigma +
+    # premium stays > 0 since sigma >= 0.12 and premium >= -0.04.
+    vrp_vol_premium: UniformPrior = Field(
+        default_factory=lambda: UniformPrior(low=-0.04, high=0.18)
+    )
 
 
 @dataclass(frozen=True, slots=True)
