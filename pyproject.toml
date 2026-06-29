@@ -1,0 +1,69 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "optspread"
+version = "0.1.0"
+description = "SPX options spread-selection RL research environment and PPO baseline"
+requires-python = ">=3.11"
+dependencies = [
+    "numpy>=1.26",
+    "scipy>=1.11",
+    "gymnasium>=0.29",
+    "pydantic>=2.0",
+    "torch>=2.6,<2.7",
+    "tensorboard>=2.20",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.4",
+    "pytest-cov>=4.1",
+    "hypothesis>=6.88",
+    "mypy>=1.7",
+    "ruff>=0.1.6",
+    "matplotlib>=3.8",
+]
+
+[tool.setuptools.packages.find]
+include = ["optspread*"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "N", "UP", "B", "SIM", "RUF"]
+ignore = ["N803", "N806"]  # allow math-style uppercase var names (S, K, T)
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+plugins = ["pydantic.mypy"]
+warn_unused_ignores = true
+disallow_untyped_defs = true
+
+[[tool.mypy.overrides]]
+module = ["scipy.*", "gymnasium.*", "matplotlib.*"]
+ignore_missing_imports = true
+
+# torch ships incomplete stubs: torch.distributions methods (sample/log_prob/
+# entropy), Tensor.backward, and torch.utils.tensorboard.SummaryWriter are typed
+# as untyped, so calling them under --strict trips no-untyped-call through no
+# fault of our code. Scope the relaxation tightly to the modules that touch them.
+[[tool.mypy.overrides]]
+module = [
+    "optspread.agents.ppo.network",
+    "optspread.agents.ppo.trainer",
+    "optspread.agents.distributional.trainer",
+    "optspread.training.logging",
+]
+disable_error_code = ["no-untyped-call"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+
+[tool.coverage.report]
+exclude_lines = ["pragma: no cover", "raise NotImplementedError", "if TYPE_CHECKING:"]

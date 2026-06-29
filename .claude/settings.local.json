@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell($py = \\(Get-Command python -ErrorAction SilentlyContinue\\); if \\($py\\) { python --version }; $uv = \\(Get-Command uv -ErrorAction SilentlyContinue\\); if \\($uv\\) { \"uv: $\\(uv --version\\)\" } else { \"uv: not found\" }; $make = \\(Get-Command make -ErrorAction SilentlyContinue\\); if \\($make\\) { \"make: found\" } else { \"make: not found\" })"
+    ]
+  }
+}
