@@ -5,6 +5,7 @@ from __future__ import annotations
 from datetime import date
 
 import numpy as np
+import pytest
 
 from optspread.agents.base import FlatAgent
 from optspread.config import GBMConfig
@@ -79,6 +80,54 @@ def test_real_generator_warmup_seeds_history_before_first_tradeable_row() -> Non
     assert next_snapshot.chain.spot == spots[5]
     assert next_snapshot.t == 2
     assert replay.done
+
+
+def test_real_generator_sample_window_uses_rng_and_causal_lead_in() -> None:
+    spots = [100.0, 103.0, 101.0, 106.0, 102.0, 109.0, 104.0, 111.0, 107.0, 114.0]
+    rows = [
+        SurfaceRow(
+            str(i),
+            spot,
+            IVSurface.flat(sigma=0.2 + i * 0.001, spot=spot, r=0.0, q=0.0, t=10_000 + i),
+        )
+        for i, spot in enumerate(spots)
+    ]
+    replay = RealDataReplay(rows, GBMConfig(n_days=99), warmup_rows=2, sample_window=4)
+    rng = np.random.default_rng(0)
+    expected_rng = np.random.default_rng(0)
+    first_start = int(expected_rng.integers(2, len(rows) - 4 + 1))
+    second_start = int(expected_rng.integers(2, len(rows) - 4 + 1))
+
+    first = replay.reset(rng)
+
+    assert first_start != second_start
+    assert first.chain.spot == spots[first_start]
+    assert first.t == 0
+    assert first.chain.t == 0
+    assert first.regime_features["iv_rank"] != 0.5
+    assert replay.step().chain.spot == spots[first_start + 1]
+    assert replay.step().chain.spot == spots[first_start + 2]
+    assert replay.step().chain.spot == spots[first_start + 3]
+    assert replay.done
+
+    second = replay.reset(rng)
+
+    assert second.chain.spot == spots[second_start]
+    assert second.t == 0
+    assert second.chain.t == 0
+
+
+def test_real_generator_rejects_oversized_sample_window() -> None:
+    rows = [
+        SurfaceRow(
+            str(i),
+            5000.0 + i,
+            IVSurface.flat(sigma=0.2, spot=5000.0 + i, r=0.0, q=0.0, t=i),
+        )
+        for i in range(5)
+    ]
+    with pytest.raises(ValueError, match="sample_window plus warmup_rows"):
+        RealDataReplay(rows, warmup_rows=2, sample_window=4)
 
 
 def test_walkforward_purge_embargo_and_statistics() -> None:
