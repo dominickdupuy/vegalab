@@ -32,6 +32,31 @@ def phase2_risk_reward(*, pnl_scale: float = 10_000.0) -> RewardConfig:
     )
 
 
+def curriculum_reward(*, pnl_scale: float = 10_000.0) -> RewardConfig:
+    """Reward used to TRAIN the curriculum (Wave 1+): mark-to-market P&L only.
+
+    Tail-aversion is delivered AGENT-side (the IQN CVaR action selection), not by
+    the env reward, per the project design ("the native tail objective arrives in
+    Phase 3"). PPO and the distributional agents consume this identical reward;
+    the only difference is expected-value vs CVaR action selection.
+
+    A DifferentialSharpe term was evaluated and rejected: empirically it rewards
+    trading on the no-edge Wave-0 market (breaking the no-edge invariant) and
+    over-penalizes high-variance short-premium structures, suppressing the very
+    VRP behavior Wave 1 must express. The env CVaR penalty used by the Wave-0
+    gate is likewise omitted here because it dominates the P&L edge ~8x and makes
+    FLAT optimal even when a trade is clearly +EV.
+    """
+    return RewardConfig(
+        pnl_scale=pnl_scale,
+        mtm_weight=1.0,
+        margin_normalized_weight=0.0,
+        sharpe_weight=0.0,
+        sortino_weight=0.0,
+        cvar_weight=0.0,
+    )
+
+
 def pure_pnl_reward(*, pnl_scale: float = 10_000.0) -> RewardConfig:
     """Pure-PnL ablation reward for the no-cost indifference cross-check."""
     return RewardConfig(

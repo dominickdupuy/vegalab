@@ -12,7 +12,17 @@ from optspread.config import CostConfig, EnvConfig, GBMConfig, RewardConfig
 from optspread.curriculum.waves import wave1_spec
 from optspread.envs.builder import EnvBundle
 from optspread.training.env_factory import EnvFactory
-from optspread.training.phase2 import no_cost_config, phase2_risk_reward
+from optspread.training.phase2 import curriculum_reward, no_cost_config, phase2_risk_reward
+
+
+def default_reward_for_wave(wave_id: int) -> RewardConfig:
+    """Reward each wave uses when one is not supplied explicitly.
+
+    Wave 0 keeps the soft-CVaR no-edge gate reward (its thesis question is
+    environment honesty / FLAT-dominance). Waves >= 1 train on mark-to-market
+    P&L only, with tail-aversion delivered agent-side.
+    """
+    return phase2_risk_reward() if wave_id == 0 else curriculum_reward()
 
 
 def wave_factory(
@@ -25,10 +35,11 @@ def wave_factory(
     """Build the ``EnvFactory`` for a curriculum wave.
 
     Wave 0 is the fair-IV GBM sanity baseline; waves >= 1 inject their stylized
-    -fact generator while reusing the identical reward and cost models.
+    -fact generator. The cost model is held fixed across waves; the training
+    reward defaults per wave (see ``default_reward_for_wave``) unless overridden.
     """
     cfg = GBMConfig(n_days=episode_length)
-    bundle_reward = reward or phase2_risk_reward()
+    bundle_reward = reward or default_reward_for_wave(wave_id)
     cost = CostConfig() if with_costs else no_cost_config()
     if wave_id == 0:
         generator_factory = None

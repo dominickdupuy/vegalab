@@ -52,7 +52,11 @@ def main() -> None:
     parser.add_argument("--no-tensorboard", action="store_true")
     args = parser.parse_args()
 
-    reward = phase2_risk_reward() if args.reward_preset == "phase2-risk" else pure_pnl_reward()
+    # The reward preset applies to the Wave-0 gate; Wave 1+ uses the per-wave
+    # curriculum default (MTM-only, tail-aversion agent-side) chosen by wave_factory.
+    use_risk = args.reward_preset == "phase2-risk"
+    wave0_reward = phase2_risk_reward() if use_risk else pure_pnl_reward()
+    reward = wave0_reward if args.wave == 0 else None
     factory = wave_factory(args.wave, reward=reward, with_costs=not args.no_costs)
     cfg = phase2_ppo_config(
         seed=args.seed,

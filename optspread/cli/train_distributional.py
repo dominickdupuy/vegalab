@@ -15,7 +15,6 @@ from optspread.eval.metrics import MetricSuite
 from optspread.training.curriculum_factory import wave_factory
 from optspread.training.harness import TrainHarness
 from optspread.training.logging import MetricLogger
-from optspread.training.phase2 import phase2_risk_reward
 from optspread.training.seeding import run_dir
 
 
@@ -44,8 +43,9 @@ def main() -> None:
     parser.add_argument("--no-tensorboard", action="store_true")
     args = parser.parse_args()
 
-    reward = phase2_risk_reward()
-    factory = wave_factory(args.wave, reward=reward, with_costs=True)
+    # Reward defaults per wave (Wave 0: no-edge gate reward; Wave 1+: MTM-only,
+    # tail-aversion is agent-side via CVaR action selection).
+    factory = wave_factory(args.wave, with_costs=True)
     risk = RiskMeasure.mean() if args.risk == "mean" else RiskMeasure.cvar(args.cvar_alpha)
     cfg: QRDQNConfig | IQNConfig
     agent: QRDQNAgent | IQNAgent
