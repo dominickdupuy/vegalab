@@ -20,6 +20,18 @@ from optspread.training.phase2 import (
 from optspread.training.seeding import run_dir
 
 
+def _parse_rehearsal_waves(raw: str) -> tuple[int, ...]:
+    if not raw.strip():
+        return ()
+    parts = raw.split(",")
+    if any(not part.strip() for part in parts):
+        raise argparse.ArgumentTypeError("expected comma-separated wave ids")
+    try:
+        return tuple(int(part.strip()) for part in parts)
+    except ValueError as exc:
+        raise argparse.ArgumentTypeError("expected comma-separated integer wave ids") from exc
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="Train PPO on Wave-0 fair-IV GBM")
     parser.add_argument("--run-root", type=Path, default=Path("runs"))
@@ -52,6 +64,8 @@ def main() -> None:
         default="phase2-risk",
     )
     parser.add_argument("--no-costs", action="store_true")
+    parser.add_argument("--rehearsal-fraction", type=float, default=0.0)
+    parser.add_argument("--rehearsal-waves", type=_parse_rehearsal_waves, default=None)
     parser.add_argument("--flat-threshold", type=float, default=0.8)
     parser.add_argument("--no-gate", action="store_true")
     parser.add_argument("--no-tensorboard", action="store_true")
@@ -62,7 +76,15 @@ def main() -> None:
     use_risk = args.reward_preset == "phase2-risk"
     wave0_reward = phase2_risk_reward() if use_risk else pure_pnl_reward()
     reward = wave0_reward if args.wave == 0 else None
-    factory = wave_factory(args.wave, reward=reward, with_costs=not args.no_costs)
+    # Training mixes earlier-wave rehearsal; evaluation stays on the pure target wave.
+    train_factory = wave_factory(
+        args.wave,
+        reward=reward,
+        with_costs=not args.no_costs,
+        rehearsal_fraction=args.rehearsal_fraction,
+        rehearsal_waves=args.rehearsal_waves,
+    )
+    eval_factory = wave_factory(args.wave, reward=reward, with_costs=not args.no_costs)
     cfg = phase2_ppo_config(
         seed=args.seed,
         total_timesteps=args.total_timesteps,
@@ -72,14 +94,14 @@ def main() -> None:
         ent_coef=args.ent_coef,
         target_kl=args.target_kl,
     )
-    agent = PPOAgent(factory.obs_dim, factory.n_actions, cfg)
+    agent = PPOAgent(train_factory.obs_dim, train_factory.n_actions, cfg)
     if args.warm_start is not None:
         agent.load(args.warm_start)
-    trainer = PPOTrainer(agent, factory, cfg, env_base_seed=args.env_seed_start)
+    trainer = PPOTrainer(agent, train_factory, cfg, env_base_seed=args.env_seed_start)
     eval_seeds = tuple(range(args.eval_seed_start, args.eval_seed_start + args.eval_episodes))
     train_seed_anchors = tuple(range(args.env_seed_start, args.env_seed_start + cfg.num_envs))
     evaluator = Evaluator(
-        factory,
+        eval_factory,
         eval_seeds,
         MetricSuite(n_boot=2_000),
         train_seeds=train_seed_anchors,

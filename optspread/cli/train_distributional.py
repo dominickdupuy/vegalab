@@ -18,6 +18,18 @@ from optspread.training.logging import MetricLogger
 from optspread.training.seeding import run_dir
 
 
+def _parse_rehearsal_waves(raw: str) -> tuple[int, ...]:
+    if not raw.strip():
+        return ()
+    parts = raw.split(",")
+    if any(not part.strip() for part in parts):
+        raise argparse.ArgumentTypeError("expected comma-separated wave ids")
+    try:
+        return tuple(int(part.strip()) for part in parts)
+    except ValueError as exc:
+        raise argparse.ArgumentTypeError("expected comma-separated integer wave ids") from exc
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="Train a Phase-3 distributional agent")
     parser.add_argument("--algo", choices=("qrdqn", "iqn"), default="qrdqn")
@@ -45,12 +57,21 @@ def main() -> None:
     parser.add_argument("--n-quantiles", type=int, default=None)
     parser.add_argument("--cvar-alpha", type=float, default=0.05)
     parser.add_argument("--risk", choices=("mean", "cvar"), default="cvar")
+    parser.add_argument("--rehearsal-fraction", type=float, default=0.0)
+    parser.add_argument("--rehearsal-waves", type=_parse_rehearsal_waves, default=None)
     parser.add_argument("--no-tensorboard", action="store_true")
     args = parser.parse_args()
 
     # Reward defaults per wave (Wave 0: no-edge gate reward; Wave 1+: MTM-only,
     # tail-aversion is agent-side via CVaR action selection).
-    factory = wave_factory(args.wave, with_costs=True)
+    # Training mixes earlier-wave rehearsal; evaluation stays on the pure target wave.
+    train_factory = wave_factory(
+        args.wave,
+        with_costs=True,
+        rehearsal_fraction=args.rehearsal_fraction,
+        rehearsal_waves=args.rehearsal_waves,
+    )
+    eval_factory = wave_factory(args.wave, with_costs=True)
     risk = RiskMeasure.mean() if args.risk == "mean" else RiskMeasure.cvar(args.cvar_alpha)
     cfg: QRDQNConfig | IQNConfig
     agent: QRDQNAgent | IQNAgent
@@ -63,7 +84,7 @@ def main() -> None:
             n_quantiles=args.n_quantiles or 200,
             cvar_alpha=args.cvar_alpha,
         )
-        agent = QRDQNAgent(factory.obs_dim, factory.n_actions, cfg, risk_measure=risk)
+        agent = QRDQNAgent(train_factory.obs_dim, train_factory.n_actions, cfg, risk_measure=risk)
     else:
         cfg = IQNConfig(
             seed=args.seed,
@@ -73,7 +94,7 @@ def main() -> None:
             n_quantiles=args.n_quantiles or 32,
             cvar_alpha=args.cvar_alpha,
         )
-        agent = IQNAgent(factory.obs_dim, factory.n_actions, cfg, risk_measure=risk)
+        agent = IQNAgent(train_factory.obs_dim, train_factory.n_actions, cfg, risk_measure=risk)
 
     if args.warm_start is not None:
         agent.load(args.warm_start)
@@ -81,10 +102,10 @@ def main() -> None:
         # selected for THIS wave so warm-starting transfers weights only.
         agent.risk_measure = risk
 
-    trainer = DistributionalTrainer(agent, factory, cfg, env_seed=args.env_seed)
+    trainer = DistributionalTrainer(agent, train_factory, cfg, env_seed=args.env_seed)
     eval_seeds = tuple(range(args.eval_seed_start, args.eval_seed_start + args.eval_episodes))
     evaluator = Evaluator(
-        factory, eval_seeds, MetricSuite(n_boot=1_000), train_seeds=(args.env_seed,)
+        eval_factory, eval_seeds, MetricSuite(n_boot=1_000), train_seeds=(args.env_seed,)
     )
     out_dir = run_dir(args.run_root, f"{args.run_name}_{args.algo}_{args.risk}", args.seed)
     logger = MetricLogger(out_dir / "tb", enabled=not args.no_tensorboard)
