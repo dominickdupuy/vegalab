@@ -62,6 +62,10 @@ def main() -> None:
     # exploration-starve and collapse to FLAT under tail-aversion + rehearsal.
     parser.add_argument("--epsilon-end", type=float, default=None)
     parser.add_argument("--epsilon-decay-steps", type=int, default=None)
+    # Network width. The 35-dim rich observation needs more capacity than the
+    # original 16-dim obs to extract the (subtle) regime->edge signal; too small
+    # a net leaves the CVaR agent unable to value trading and it collapses to FLAT.
+    parser.add_argument("--hidden-sizes", type=_parse_rehearsal_waves, default=None)
     parser.add_argument("--rehearsal-fraction", type=float, default=0.0)
     parser.add_argument("--rehearsal-waves", type=_parse_rehearsal_waves, default=None)
     parser.add_argument("--no-tensorboard", action="store_true")
@@ -78,11 +82,13 @@ def main() -> None:
     )
     eval_factory = wave_factory(args.wave, with_costs=True)
     risk = RiskMeasure.mean() if args.risk == "mean" else RiskMeasure.cvar(args.cvar_alpha)
-    eps_overrides: dict[str, float | int] = {}
+    eps_overrides: dict[str, object] = {}
     if args.epsilon_end is not None:
         eps_overrides["epsilon_end"] = args.epsilon_end
     if args.epsilon_decay_steps is not None:
         eps_overrides["epsilon_decay_steps"] = args.epsilon_decay_steps
+    if args.hidden_sizes:
+        eps_overrides["hidden_sizes"] = tuple(args.hidden_sizes)
     cfg: QRDQNConfig | IQNConfig
     agent: QRDQNAgent | IQNAgent
     if args.algo == "qrdqn":
