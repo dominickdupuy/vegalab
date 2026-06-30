@@ -92,9 +92,38 @@ sim-to-real gap, not a leak or bug:
   agent and FLAT correctly avoid it.
 
 This is the textbook teachability-vs-realism gap and motivates the brief's
-**fine-tuning** step (re-calibrate the threshold to the real VRP scale) — to be
-run next, leading with this zero-shot result. If fine-tuning cannot bridge it,
-the brief's **sim-to-real gap-study** reframing applies (still a contribution).
+**fine-tuning** step (re-calibrate the threshold to the real VRP scale).
+
+## Fine-tuned real OOS (2026-06-29) — sim-to-real collapse
+
+Light real fine-tune (`optspread.cli.finetune_real`: warm-start Wave-1 IQN seed
+711, low LR 1e-5, 15k steps, random windows from the first 60% of rows; CVaR stays
+agent-side). Evaluated on the SAME leak-free post-split test folds (rows[4467:],
+~2013–2025) as zero-shot, with cost stress:
+
+| Agent (post-split folds) | Sharpe | CVaR95 | MaxDD | Mean PnL/step |
+|---|---|---|---|---|
+| Zero-shot CVaR | 0.00 | 0.00 | 0.00 | 0.00 (flat) |
+| Fine-tuned CVaR (cost ×1) | −4.17 | −2376 | 5.78 | −224 |
+| Fine-tuned CVaR (cost ×2) | −5.51 | −3848 | 11.24 | −445 |
+| VRP heuristic | −0.54 | −1182 | 0.38 | −15 |
+| FLAT | 0.00 | — | — | 0.00 |
+
+**Fine-tuning makes the agent trade, and it collapses.** It harvested small real
+VRP learned on the calmer early span, then the volatile test span (2018/2020/2022
+tail events) crushed the short premium; break-even cost is < ×1 (never beats
+FLAT). Root causes: (a) **Wave-1-only** training — the agent never learned the
+tail-aware structure selection that Waves 2–6 (stoch-vol, jumps, regimes) are
+meant to teach; (b) a single calm→volatile temporal split rather than per-fold
+walk-forward fine-tuning; (c) the learned return distribution does not capture
+real tails, so CVaR-selection over it still chooses to sell.
+
+This is the brief's anticipated **sim-to-real gap** and it *validates the thesis
+premise* (naive VRP harvesting is tail-vulnerable; tail-aware selection is the
+point). A real OOS win plausibly requires the FULL curriculum checkpoint, which
+is currently blocked by the environment killing long (~40-min) trainings. Status:
+zero-shot and fine-tuned real OOS are both **RUN and reported honestly**; the
+headline positive result remains **pending the full curriculum**.
 
 ## Local WRDS export entry point
 
