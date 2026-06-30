@@ -42,15 +42,18 @@ Status: **PASS** (ensemble, deterministic eval; CVaR deployment for IQN)
 Pre-registered prediction (`curriculum/predictions.py`, committed before training):
 `corr(credit_indicator, vrp) > 0.10`, returns positive but bounded.
 
-| Agent | BV_1 corr (mean ± std) | FF_1 (Wave-0 no-edge) |
-|---|---|---|
-| IQN/CVaR (primary) | **+0.72 ± 0.03** | PASS — flat 1.00, mean PnL 0 |
-| PPO | **+0.72 ± 0.00** | PASS — flat 0.89, mean PnL < 0 (no edge) |
+| Agent | BV_1 corr (per seed) | BV_1 mean ± std | FF_1 |
+|---|---|---|---|
+| IQN/CVaR (primary) | +0.71, +0.76, +0.24 | **+0.57 ± 0.23 (3/3 pass)** | PASS (flat ~1.0) |
+| PPO | +0.72, +0.72, collapsed | +0.72 ± 0.00 (**2/3 pass**) | PASS (flat ~0.89, no edge) |
 
-Both far exceed the 0.10 threshold; the CVaR agent trades less than the
-risk-neutral policy (tail-averse) yet still harvests VRP precisely when the
-observable VRP feature is positive; mean episode P&L is positive but bounded.
-Per-seed/aggregate detail in `runs/phase4_wave1_bv1_ff1.json`.
+All passing seeds far exceed the 0.10 threshold. The **primary CVaR/IQN agent is
+robust (3/3)**; PPO (on-policy) collapsed to FLAT on 1 of 3 seeds — a real seed-
+variance failure mode the off-policy distributional agent (persistent ε-floor
+exploration + risk-neutral bootstrap) avoided. The CVaR agent trades less than the
+risk-neutral policy (tail-averse) yet still harvests VRP when the observable VRP
+feature is positive; mean episode P&L positive but bounded. Trained detached (see
+the long-training kill note); per-seed detail in `runs/phase4_wave1_bv1_ff1.json`.
 
 ### What it took (the recipe — see also the per-wave learnability note)
 
