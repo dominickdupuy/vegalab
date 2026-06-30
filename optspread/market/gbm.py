@@ -16,8 +16,9 @@ from __future__ import annotations
 import numpy as np
 
 from optspread.config import GBMConfig
-from optspread.instruments.chain import ChainSnapshot
+from optspread.features.regime_features import build_regime_features
 from optspread.market.snapshot import MarketSnapshot
+from optspread.market.surface import IVSurface
 
 
 class GBMGenerator:
@@ -29,6 +30,7 @@ class GBMGenerator:
         self._spot: float = config.spot0
         self._day: int = 0
         self._log_returns: list[float] = []
+        self._iv_history: list[float] = []
 
     # -- PriceGenerator protocol ------------------------------------------- #
 
@@ -37,6 +39,7 @@ class GBMGenerator:
         self._spot = self.config.spot0
         self._day = 0
         self._log_returns = []
+        self._iv_history = []
         return self._snapshot()
 
     def step(self) -> MarketSnapshot:
@@ -61,19 +64,10 @@ class GBMGenerator:
 
     # -- internals --------------------------------------------------------- #
 
-    def _build_chain(self) -> ChainSnapshot:
+    def _surface(self) -> IVSurface:
         cfg = self.config
-        step = self._spot * cfg.strike_spacing_pct
-        n = cfg.n_strikes_each_side
-        lo = self._spot - n * step
-        strikes = lo + np.arange(2 * n + 1) * step
-        # Fair IV: flat surface at sigma across all strikes and expiries.
-        expiries = np.array(cfg.expiry_days, dtype=np.float64) / cfg.trading_days_per_year
-        ivs = np.full((expiries.shape[0], strikes.shape[0]), cfg.sigma, dtype=np.float64)
-        return ChainSnapshot(
-            strikes=strikes.astype(np.float64),
-            ivs=ivs,
-            expiries=expiries,
+        return IVSurface.flat(
+            sigma=cfg.sigma,
             spot=float(self._spot),
             r=cfg.r,
             q=cfg.q,
@@ -81,31 +75,23 @@ class GBMGenerator:
             trading_days_per_year=cfg.trading_days_per_year,
         )
 
-    def _regime_features(self) -> dict[str, float]:
-        cfg = self.config
-        # Trailing momentum: standardized mean of recent daily log returns.
-        window = min(len(self._log_returns), 21)
-        if window > 0:
-            recent = np.array(self._log_returns[-window:])
-            dt = 1.0 / cfg.trading_days_per_year
-            daily_sigma = cfg.sigma * np.sqrt(dt)
-            momentum = float(np.mean(recent) / daily_sigma) if daily_sigma > 0 else 0.0
-            realized = float(np.std(recent) / np.sqrt(dt)) if window > 1 else cfg.sigma
-        else:
-            momentum = 0.0
-            realized = cfg.sigma
-        # Fair IV => VRP ~ 0, flat term structure, IV-rank undefined (use 0.5).
-        return {
-            "trailing_momentum": momentum,
-            "realized_vol": realized,
-            "vrp": cfg.sigma**2 - realized**2,
-            "iv_rank": 0.5,
-            "term_slope": 0.0,
-        }
-
     def _snapshot(self) -> MarketSnapshot:
+        cfg = self.config
+        surface = self._surface()
+        atm = surface.iv_at_delta_maturity(0.50, float(surface.maturity_days[0]))
+        self._iv_history.append(atm)
+        chain = surface.to_chain(
+            expiry_days=cfg.expiry_days,
+            n_strikes_each_side=cfg.n_strikes_each_side,
+            strike_spacing_pct=cfg.strike_spacing_pct,
+        )
         return MarketSnapshot(
-            chain=self._build_chain(),
+            chain=chain,
             t=self._day,
-            regime_features=self._regime_features(),
+            regime_features=build_regime_features(
+                surface=surface,
+                log_returns=self._log_returns,
+                iv_history=self._iv_history,
+            ),
+            surface=surface,
         )

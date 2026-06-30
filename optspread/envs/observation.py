@@ -6,23 +6,23 @@ folded into existing slots, or appended, never inserted. The vector is purely a
 function of information available at the close of the step — no look-ahead.
 
 Layout (all float32):
-    [0:5]  regime features, canonical order (see REGIME_FEATURE_KEYS)
-    [5]    has_position flag (0/1)
-    [6]    margin held / initial_cash
-    [7]    unrealized P&L / initial_cash
-    [8]    days position has been held / episode_length
-    [9]    held action_id / N_ACTIONS  (0 when flat)
-    [10]   episode progress: day / episode_length
-    [11]   equity / initial_cash
-    [12]   differential-Sharpe EMA A (mean return)        }  risk-reward state, so
-    [13]   differential-Sharpe EMA B (mean squared return)}  the risk-adjusted
-    [14]   current drawdown from equity high-water / cash  }  reward is Markovian
-    [15]   min days-to-expiry of held legs / episode_length}  (see CLAUDE.md)
+    [0:R]    regime features, canonical order, R=len(REGIME_FEATURE_KEYS)
+    [R]      has_position flag (0/1)
+    [R+1]    margin held / initial_cash
+    [R+2]    unrealized P&L / initial_cash
+    [R+3]    days position has been held / episode_length
+    [R+4]    held action_id / N_ACTIONS  (0 when flat)
+    [R+5]    episode progress: day / episode_length
+    [R+6]    equity / initial_cash
+    [R+7]    differential-Sharpe EMA A (mean return)        }  risk-reward state, so
+    [R+8]    differential-Sharpe EMA B (mean squared return)}  the risk-adjusted
+    [R+9]    current drawdown from equity high-water / cash  }  reward is Markovian
+    [R+10]   min days-to-expiry of held legs / episode_length}  (see CLAUDE.md)
 
-APPEND-ONLY: slots [12:16] were added in Phase 2 to make the differential-Sharpe
-and drawdown reward terms observable to a feed-forward policy. New information
-must extend this vector, never reorder it — a saved policy's input layout is
-fixed forever.
+APPEND-ONLY: the final four non-regime slots were added in Phase 2 to make the
+differential-Sharpe and drawdown reward terms observable to a feed-forward
+policy. New information must extend this vector, never reorder it — a saved
+policy's input layout is fixed forever.
 """
 
 from __future__ import annotations

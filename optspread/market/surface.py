@@ -106,13 +106,16 @@ class IVSurface:
         lo = self.spot - n_strikes_each_side * step
         strikes = (lo + np.arange(2 * n_strikes_each_side + 1) * step).astype(np.float64)
         expiries = np.asarray(expiry_days, dtype=np.float64) / self.trading_days_per_year
-        ivs = np.asarray(
-            [
-                [self.iv_for_strike(float(strike), float(days)) for strike in strikes]
-                for days in expiry_days
-            ],
-            dtype=np.float64,
-        )
+        if bool(np.all(self.ivs == self.ivs[0, 0])):
+            ivs = np.full((expiries.shape[0], strikes.shape[0]), float(self.ivs[0, 0]))
+        else:
+            ivs = np.asarray(
+                [
+                    [self.iv_for_strike(float(strike), float(days)) for strike in strikes]
+                    for days in expiry_days
+                ],
+                dtype=np.float64,
+            )
         return ChainSnapshot(
             strikes=strikes,
             ivs=ivs,
