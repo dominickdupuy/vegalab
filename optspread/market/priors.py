@@ -36,6 +36,21 @@ class GBMVRPPriors(BaseModel):
     )
 
 
+class HestonPriors(BaseModel):
+    """Wave-2 stochastic-volatility priors.
+
+    ``v0_theta_mult`` is converted by ``ParamSampler`` into ``v0 = theta * mult``
+    so the latent starting variance is drawn near the sampled physical
+    long-run variance.
+    """
+
+    kappa: UniformPrior = Field(default_factory=lambda: UniformPrior(low=1.0, high=10.0))
+    theta: UniformPrior = Field(default_factory=lambda: UniformPrior(low=0.02, high=0.09))
+    sigma_v: UniformPrior = Field(default_factory=lambda: UniformPrior(low=0.2, high=1.0))
+    rho: UniformPrior = Field(default_factory=lambda: UniformPrior(low=-0.9, high=-0.3))
+    v0_theta_mult: UniformPrior = Field(default_factory=lambda: UniformPrior(low=0.80, high=1.20))
+
+
 @dataclass(frozen=True, slots=True)
 class SampledParams:
     values: dict[str, float]
@@ -52,4 +67,6 @@ class ParamSampler:
         for name, prior in self.priors:
             if isinstance(prior, UniformPrior):
                 values[name] = prior.sample(rng)
+        if "theta" in values and "v0_theta_mult" in values:
+            values["v0"] = values["theta"] * values.pop("v0_theta_mult")
         return SampledParams(values)

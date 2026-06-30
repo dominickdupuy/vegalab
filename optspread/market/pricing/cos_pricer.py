@@ -180,6 +180,88 @@ class COSPricer:
             return call_price
         return call_price - spot * float(np.exp(-q * T)) + strike * float(np.exp(-r * T))
 
+    def heston_call_prices(
+        self,
+        *,
+        spot: float,
+        strikes: _FloatArray,
+        r: float,
+        q: float,
+        T: float,
+        kappa: float,
+        theta: float,
+        sigma_v: float,
+        rho: float,
+        v0: float,
+    ) -> _FloatArray:
+        """Vectorized Heston call prices for one maturity and many strikes."""
+        if self.n_terms < 2:
+            raise ValueError("n_terms must be at least 2")
+        if spot <= 0.0 or np.any(strikes <= 0.0):
+            raise ValueError("spot and strikes must be positive")
+        if T <= 0.0:
+            return np.maximum(spot - strikes, 0.0).astype(np.float64)
+        _validate_heston_inputs(
+            kappa=kappa,
+            theta=theta,
+            sigma_v=sigma_v,
+            rho=rho,
+            v0=v0,
+        )
+        if sigma_v <= _NEAR_ZERO_VOL_OF_VOL:
+            integrated_variance = _deterministic_integrated_variance(
+                T=T,
+                kappa=kappa,
+                theta=theta,
+                v0=v0,
+            )
+            sigma = float(np.sqrt(max(integrated_variance / T, 0.0)))
+            return np.asarray(bs_price("C", spot, strikes, r, q, sigma, T), dtype=np.float64)
+
+        c1, c2 = _heston_cumulants(
+            spot=spot,
+            r=r,
+            q=q,
+            T=T,
+            kappa=kappa,
+            theta=theta,
+            sigma_v=sigma_v,
+            rho=rho,
+            v0=v0,
+        )
+        width = self.truncation * float(np.sqrt(max(c2, _MIN_VARIANCE)))
+        a = c1 - width
+        b = c1 + width
+        if not np.isfinite(a) or not np.isfinite(b) or b <= a:
+            raise ValueError("invalid COS truncation interval")
+
+        frequencies = np.arange(self.n_terms, dtype=np.float64) * np.pi / (b - a)
+        u = np.asarray(frequencies, dtype=np.complex128)
+        weights = np.ones(self.n_terms, dtype=np.float64)
+        weights[0] = 0.5
+        cf_values = heston_cf(
+            u,
+            spot=spot,
+            r=r,
+            q=q,
+            T=T,
+            kappa=kappa,
+            theta=theta,
+            sigma_v=sigma_v,
+            rho=rho,
+            v0=v0,
+        )
+        basis = weights * np.real(cf_values * np.exp(-1j * u * a))
+        coefficients = np.asarray(
+            [
+                _payoff_coefficients("C", strike=float(strike), a=a, b=b, u=frequencies)
+                for strike in strikes
+            ],
+            dtype=np.float64,
+        )
+        prices = np.asarray(np.exp(-r * T) * (coefficients @ basis), dtype=np.float64)
+        return np.asarray(np.maximum(prices, 0.0), dtype=np.float64)
+
     def bates_price(
         self,
         right: str,

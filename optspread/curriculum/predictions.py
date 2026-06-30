@@ -32,3 +32,11 @@ WAVE1_CREDIT_VRP = PreRegisteredPrediction(
     threshold=0.10,
     direction=">",
 )
+
+WAVE2_IVRANK = PreRegisteredPrediction(
+    wave=2,
+    hypothesis="structure choice conditions on IV rank / term-structure slope",
+    statistic="corr(credit_indicator, iv_rank)",
+    threshold=0.10,
+    direction=">",
+)
