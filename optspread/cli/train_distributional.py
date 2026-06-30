@@ -57,6 +57,11 @@ def main() -> None:
     parser.add_argument("--n-quantiles", type=int, default=None)
     parser.add_argument("--cvar-alpha", type=float, default=0.05)
     parser.add_argument("--risk", choices=("mean", "cvar"), default="cvar")
+    # Exploration schedule. A higher epsilon floor / longer decay keeps trade
+    # actions sampled throughout training so the CVaR-greedy agent does not
+    # exploration-starve and collapse to FLAT under tail-aversion + rehearsal.
+    parser.add_argument("--epsilon-end", type=float, default=None)
+    parser.add_argument("--epsilon-decay-steps", type=int, default=None)
     parser.add_argument("--rehearsal-fraction", type=float, default=0.0)
     parser.add_argument("--rehearsal-waves", type=_parse_rehearsal_waves, default=None)
     parser.add_argument("--no-tensorboard", action="store_true")
@@ -73,6 +78,11 @@ def main() -> None:
     )
     eval_factory = wave_factory(args.wave, with_costs=True)
     risk = RiskMeasure.mean() if args.risk == "mean" else RiskMeasure.cvar(args.cvar_alpha)
+    eps_overrides: dict[str, float | int] = {}
+    if args.epsilon_end is not None:
+        eps_overrides["epsilon_end"] = args.epsilon_end
+    if args.epsilon_decay_steps is not None:
+        eps_overrides["epsilon_decay_steps"] = args.epsilon_decay_steps
     cfg: QRDQNConfig | IQNConfig
     agent: QRDQNAgent | IQNAgent
     if args.algo == "qrdqn":
@@ -83,6 +93,7 @@ def main() -> None:
             batch_size=args.batch_size,
             n_quantiles=args.n_quantiles or 200,
             cvar_alpha=args.cvar_alpha,
+            **eps_overrides,
         )
         agent = QRDQNAgent(train_factory.obs_dim, train_factory.n_actions, cfg, risk_measure=risk)
     else:
@@ -93,6 +104,7 @@ def main() -> None:
             batch_size=args.batch_size,
             n_quantiles=args.n_quantiles or 32,
             cvar_alpha=args.cvar_alpha,
+            **eps_overrides,
         )
         agent = IQNAgent(train_factory.obs_dim, train_factory.n_actions, cfg, risk_measure=risk)
 
