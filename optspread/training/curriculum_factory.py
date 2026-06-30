@@ -9,7 +9,7 @@ training distribution and the validation distribution can never silently drift.
 from __future__ import annotations
 
 from optspread.config import CostConfig, EnvConfig, GBMConfig, RewardConfig
-from optspread.curriculum.waves import wave1_spec
+from optspread.curriculum.waves import wave1_spec, wave2_spec
 from optspread.envs.builder import EnvBundle
 from optspread.training.env_factory import EnvFactory
 from optspread.training.phase2 import curriculum_reward, no_cost_config, phase2_risk_reward
@@ -34,9 +34,9 @@ def wave_factory(
 ) -> EnvFactory:
     """Build the ``EnvFactory`` for a curriculum wave.
 
-    Wave 0 is the fair-IV GBM sanity baseline; waves >= 1 inject their stylized
-    -fact generator. The cost model is held fixed across waves; the training
-    reward defaults per wave (see ``default_reward_for_wave``) unless overridden.
+    Wave 0 is the fair-IV GBM sanity baseline; Wave 1 is GBM + VRP; Wave 2 is
+    Heston SV. The cost model is held fixed across waves; the training reward
+    defaults per wave (see ``default_reward_for_wave``) unless overridden.
     """
     cfg = GBMConfig(n_days=episode_length)
     bundle_reward = reward or default_reward_for_wave(wave_id)
@@ -45,6 +45,8 @@ def wave_factory(
         generator_factory = None
     elif wave_id == 1:
         generator_factory = wave1_spec(cfg).make_generator
+    elif wave_id == 2:
+        generator_factory = wave2_spec(cfg).make_generator
     else:
         raise ValueError(f"unsupported wave: {wave_id}")
     return EnvFactory(

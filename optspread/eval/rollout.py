@@ -72,3 +72,12 @@ def wave1_credit_vrp_statistic(trace: RolloutTrace) -> float:
     if credit.size < 2 or float(np.std(credit)) == 0.0 or float(np.std(vrp)) == 0.0:
         return float("nan")
     return float(np.corrcoef(credit, vrp)[0, 1])
+
+
+def wave2_ivrank_statistic(trace: RolloutTrace) -> float:
+    """Correlation used by BV_2: credit-structure choice vs observed IV rank."""
+    credit = credit_structure_indicator(trace.actions)
+    iv_rank = trace.feature("iv_rank")
+    if credit.size < 2 or float(np.std(credit)) == 0.0 or float(np.std(iv_rank)) == 0.0:
+        return float("nan")
+    return float(np.corrcoef(credit, iv_rank)[0, 1])

@@ -23,7 +23,12 @@ def main() -> None:
     parser.add_argument("--algo", choices=("qrdqn", "iqn"), default="qrdqn")
     parser.add_argument("--run-root", type=Path, default=Path("runs"))
     parser.add_argument("--run-name", default="phase3_distributional_wave0")
-    parser.add_argument("--wave", type=int, default=0, help="Curriculum wave (0 fair-IV, 1 VRP).")
+    parser.add_argument(
+        "--wave",
+        type=int,
+        default=0,
+        help="Curriculum wave (0 fair-IV, 1 VRP, 2 Heston SV).",
+    )
     parser.add_argument(
         "--warm-start",
         type=Path,
