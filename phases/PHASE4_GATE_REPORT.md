@@ -43,6 +43,31 @@ a less-conservative curriculum deployment. **Open fork (awaiting user decision):
 Held here per the pre-agreed checkpoint rather than tuning the generator further
 unsupervised. Per-seed detail: `runs/phase4_wave2_bv2_ff2.json`.
 
+### Update — combined fix (stronger signal + α=0.2) + off-policy diagnosis
+
+User chose the combined fix. Applied: kappa prior [1,10]→[4,12] (faster
+mean-reversion ⇒ forward VRP more predictable from IV-rank; probe mean forward-VRP
+doubled to +0.0044, GV_2 still PASS, commit `db2bbe5`) and deploy/train the
+curriculum CVaR agent at **α=0.2**. Result (3 seeds, 100k steps):
+
+| Agent | BV_2 | FF_2 |
+|---|---|---|
+| IQN/CVaR α=0.2 | **0/3** (still ~99% FLAT) | 3/3 |
+| PPO | **2/3** (corr +0.37, +0.50 — stronger!) | 2/3 |
+
+The stronger signal markedly helped PPO but NOT the CVaR/IQN primary. A
+deploy-risk probe (re-deploy the SAME trained checkpoints at relaxed risk) shows
+even at **mean (risk-neutral)** deployment IQN trades only ~1–2% → the off-policy
+agent **did not learn to value the trade**; this is NOT α-conservatism.
+
+**Refined diagnosis:** on-policy PPO (policy-gradient + entropy) captures the
+subtle Heston mean-reversion edge; off-policy IQN (ε-greedy Q-learning) under-
+learns it — the mean Q-advantage of trading over FLAT stays near zero. Likely
+**undertraining**: Wave-2 IQN ran only 100k steps (cut for Heston's ~3× cost),
+vs the **150k** the Wave-1 width-256 ensemble needed to pass — on a harder signal.
+**Next (in progress):** IQN-only Wave-2 retrain at 150k steps, α=0.2, same boosted
+generator, to test the undertraining hypothesis. PPO ensemble (2/3 BV) kept.
+
 ---
 
 
