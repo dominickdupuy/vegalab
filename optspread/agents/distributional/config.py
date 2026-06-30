@@ -15,6 +15,10 @@ class DistributionalConfig(BaseModel):
     train_freq: int = Field(default=1, gt=0)
     gradient_steps: int = Field(default=1, gt=0)
     target_update_interval: int = Field(default=2_000, gt=0)
+    # Over-sample profitable reward>0 transitions in replay (CeSoR cross-entropy
+    # analog) to resolve a subtle +EV edge that uniform replay drowns in noise;
+    # 0.0 = uniform.
+    reward_priority_boost: float = Field(default=0.0, ge=0.0)
     epsilon_start: float = Field(default=1.0, ge=0.0, le=1.0)
     epsilon_end: float = Field(default=0.02, ge=0.0, le=1.0)
     epsilon_decay_steps: int = Field(default=50_000, gt=0)

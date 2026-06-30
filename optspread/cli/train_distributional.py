@@ -55,6 +55,7 @@ def main() -> None:
     parser.add_argument("--learning-starts", type=int, default=10_000)
     parser.add_argument("--batch-size", type=int, default=64)
     parser.add_argument("--n-quantiles", type=int, default=None)
+    parser.add_argument("--reward-priority-boost", type=float, default=None)
     parser.add_argument("--cvar-alpha", type=float, default=0.05)
     parser.add_argument("--risk", choices=("mean", "cvar"), default="cvar")
     # Exploration schedule. A higher epsilon floor / longer decay keeps trade
@@ -87,6 +88,8 @@ def main() -> None:
         eps_overrides["epsilon_end"] = args.epsilon_end
     if args.epsilon_decay_steps is not None:
         eps_overrides["epsilon_decay_steps"] = args.epsilon_decay_steps
+    if args.reward_priority_boost is not None:
+        eps_overrides["reward_priority_boost"] = args.reward_priority_boost
     if args.hidden_sizes:
         eps_overrides["hidden_sizes"] = tuple(args.hidden_sizes)
     cfg: QRDQNConfig | IQNConfig

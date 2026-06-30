@@ -18,13 +18,27 @@ class ReplayBatch:
 
 
 class UniformReplayBuffer:
-    """Fixed-size ring buffer with uniform sampling."""
+    """Fixed-size ring buffer with optional profitable-transition over-sampling.
 
-    def __init__(self, capacity: int, obs_dim: int) -> None:
+    ``reward_priority_boost`` counteracts CVaR flat-collapse by making positive-
+    reward transitions more learnable. This intentionally adds a mild optimistic
+    trading bias during optimization, so there is no importance-sampling correction;
+    deployment CVaR still tail-filters action selection.
+    """
+
+    def __init__(
+        self,
+        capacity: int,
+        obs_dim: int,
+        reward_priority_boost: float = 0.0,
+    ) -> None:
         if capacity <= 0:
             raise ValueError("capacity must be positive")
+        if reward_priority_boost < 0.0:
+            raise ValueError("reward_priority_boost must be non-negative")
         self.capacity = capacity
         self.obs_dim = obs_dim
+        self.reward_priority_boost = reward_priority_boost
         self.obs = np.zeros((capacity, obs_dim), dtype=np.float32)
         self.next_obs = np.zeros((capacity, obs_dim), dtype=np.float32)
         self.actions = np.zeros(capacity, dtype=np.int64)
@@ -57,7 +71,15 @@ class UniformReplayBuffer:
     def sample(self, batch_size: int, rng: np.random.Generator) -> ReplayBatch:
         if self._size == 0:
             raise ValueError("cannot sample from an empty replay buffer")
-        idx = rng.integers(0, self._size, size=batch_size)
+        if self._size > 0 and self.reward_priority_boost > 0.0:
+            w = np.asarray(
+                1.0 + self.reward_priority_boost * (self.rewards[: self._size] > 0.0),
+                dtype=np.float64,
+            )
+            p = w / w.sum()
+            idx = rng.choice(self._size, size=batch_size, p=p)
+        else:
+            idx = rng.integers(0, self._size, size=batch_size)
         return ReplayBatch(
             obs=self.obs[idx].copy(),
             actions=self.actions[idx].copy(),

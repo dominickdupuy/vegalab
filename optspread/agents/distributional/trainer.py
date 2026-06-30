@@ -68,7 +68,11 @@ class DistributionalTrainer:
         self.env_seed = config.seed if env_seed is None else env_seed
         self.rng = np.random.default_rng(config.seed)
         self.optimizer = torch.optim.Adam(self._parameters(), lr=config.learning_rate)
-        self.replay = UniformReplayBuffer(config.replay_size, agent.obs_dim)
+        self.replay = UniformReplayBuffer(
+            config.replay_size,
+            agent.obs_dim,
+            reward_priority_boost=config.reward_priority_boost,
+        )
         # The bootstrap target's next-action selection risk (see config docstring).
         self._target_risk = (
             RiskMeasure.mean()
