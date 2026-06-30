@@ -34,8 +34,8 @@ class HestonGenerator:
         *,
         params: SampledParams | Mapping[str, float] | None = None,
         sampler: ParamSampler | None = None,
-        warmup_days: int = 21,
-        vrp_theta_mult: float = 1.3,
+        warmup_days: int = 8,
+        vrp_theta_mult: float = 2.0,
     ) -> None:
         if params is not None and sampler is not None:
             raise ValueError("pass either params or sampler, not both")

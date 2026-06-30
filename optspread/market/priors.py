@@ -48,7 +48,12 @@ class HestonPriors(BaseModel):
     theta: UniformPrior = Field(default_factory=lambda: UniformPrior(low=0.02, high=0.09))
     sigma_v: UniformPrior = Field(default_factory=lambda: UniformPrior(low=0.2, high=1.0))
     rho: UniformPrior = Field(default_factory=lambda: UniformPrior(low=-0.9, high=-0.3))
-    v0_theta_mult: UniformPrior = Field(default_factory=lambda: UniformPrior(low=0.80, high=1.20))
+    # Widened (was [0.80,1.20]) so episodes START at varied vol levels relative to
+    # the long-run theta: high-v0 episodes (high IV-rank) mean-revert DOWN -> future
+    # realized < implied -> selling credit is profitable; low-v0 episodes revert UP
+    # -> selling loses. This makes credit-selling CONDITIONAL on IV-rank (the BV_2
+    # signal) and variable-sign, the Wave-2 analog of Wave-1's variable-sign VRP.
+    v0_theta_mult: UniformPrior = Field(default_factory=lambda: UniformPrior(low=0.70, high=1.85))
 
 
 @dataclass(frozen=True, slots=True)
