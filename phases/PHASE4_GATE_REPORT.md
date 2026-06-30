@@ -2,8 +2,63 @@
 
 Generated: 2026-06-28T22:10:00
 
-Overall implementation status: **WAVE 1 COMPLETE — GV_1, BV_1, FF_1 all PASS**
-(ensemble of trained PPO and IQN/CVaR agents; Waves 2–6 not started)
+Overall implementation status: **WAVE 1 COMPLETE (re-validated on the rich 35-dim
+observation) — GV_1, BV_1, FF_1 all PASS** for the primary IQN/CVaR ensemble.
+Wave 2 (Heston SV) training is in progress on the same rich obs. See the
+2026-06-30 rich-observation section below; the original 16-dim results follow it.
+
+## 2026-06-30 — Wave 1 re-validated on the expanded 35-dim observation
+
+Per the user directive to "give the agent as much information as possible relevant
+to learning patterns" for real-data readiness, the canonical regime-feature block
+was expanded **5 → 24 causal, no-look-ahead features** (obs_dim 16 → 35; commit
+`e996cb7`): surface shape (skew, smile/term curvature, ATM level, skew-term), IV
+dynamics (1d/5d change, vol-of-vol, IV z-score), and return dynamics (5d/63d
+momentum & realized vol, RV term ratio, realized skew/kurtosis, downside
+semideviation, path drawdown, normalized VRP). The whole curriculum is retrained
+on this obs (old checkpoints are obs_dim=16 and incompatible).
+
+**BV_1 / FF_1 (rich obs), primary IQN/CVaR ensemble, deterministic, CVaR deploy:**
+
+| Agent (recipe) | BV_1 corr(credit,vrp) | BV_1 pass | FF_1 (Wave-0 no-edge) |
+|---|---|---|---|
+| **IQN/CVaR, width 256, no rehearsal** | +0.64..+0.76 | **3/3 PASS** | **3/3 PASS** (flat 0.93–0.95) |
+| IQN/CVaR, width 128, no rehearsal | +0.66..+0.80 | 3/5 PASS | 5/5 PASS |
+| PPO baseline, rehearsal 0.25 | +0.58..+0.77 | 5/5 PASS | 3/5 PASS |
+
+All passing corrs ≫ the 0.10 threshold. Per-seed detail in
+`runs/phase4_wave1_v4.json`.
+
+### What the rich-obs revalidation took (additions to the original recipe)
+
+1. **Network capacity must scale with the obs.** At the original width 64 the
+   value-based CVaR/IQN agent **collapses to FLAT** on most seeds with the 35-dim
+   obs (it cannot value trading through the wider, noisier input) — BV ~1–2/5.
+   **Width 256 restores a robust 3/3** (width 128 gives majority 3/5). This is a
+   genuine curse-of-dimensionality + CVaR-conservatism tension, documented, not a
+   bug. New flag: `--hidden-sizes` (commit `962182d`).
+2. **CVaR alone keeps IQN FF-robust — IQN needs NO rehearsal.** The tail-averse
+   CVaR deployment makes the distributional agent stay flat on the no-edge Wave 0
+   without any rehearsal (FF 3/3–5/5). Adding Wave-0 rehearsal to IQN is
+   counter-productive: it over-reinforces flatness and worsens the FLAT collapse.
+3. **PPO (EV-maximizer) DOES need rehearsal.** With rich features and no rehearsal
+   PPO over-trades on Wave-0 noise and loses (FF 0/3). Wave-0 rehearsal
+   (`--rehearsal-fraction`, injected `RehearsalGenerator`, commit `c0b6865`)
+   recovers FF to 3/5. Rehearsal is a per-algorithm training hyperparameter (like
+   the differing learning rates); **evaluation is identical pure-wave BV/FF for
+   both agents**, so the comparison stays fair. This is itself a thesis-supporting
+   finding: the EV agent chases noise features; the CVaR agent does not.
+4. Exploration floor (`--epsilon-end`/`--epsilon-decay-steps`, commit `0d83342`)
+   is exposed for the distributional agent; width was the dominant lever.
+
+**Adopted Wave-2+ recipe:** IQN/CVaR width 256, no rehearsal, ε-floor 0.04,
+CVaR α=0.1 at deployment, MTM-only reward, risk-neutral bootstrap, from scratch;
+PPO baseline with Wave-0/earlier-wave rehearsal for FF.
+
+---
+
+## Original 16-dim results (superseded by the rich-obs section above)
+
 
 ## Implemented
 
