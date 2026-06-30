@@ -2,10 +2,49 @@
 
 Generated: 2026-06-28T22:10:00
 
-Overall implementation status: **WAVE 1 COMPLETE (re-validated on the rich 35-dim
-observation) — GV_1, BV_1, FF_1 all PASS** for the primary IQN/CVaR ensemble.
-Wave 2 (Heston SV) training is in progress on the same rich obs. See the
-2026-06-30 rich-observation section below; the original 16-dim results follow it.
+Overall implementation status: **WAVE 1 COMPLETE (rich 35-dim obs) — GV_1, BV_1,
+FF_1 all PASS** for the primary IQN/CVaR ensemble. **Wave 2 (Heston SV): GV_2 PASS,
+BV_2 NOT yet passing for the primary agent — DECISION PENDING** (see the Wave-2
+section). See the 2026-06-30 rich-observation section below; original 16-dim
+results follow it.
+
+## 2026-06-30 — Wave 2 (Heston SV): GV_2 PASS, BV_2 blocked on signal/risk fork
+
+**GV_2: PASS** (mean_vrp +0.0012, skew, iv_rank_std 0.327, term-slope, mean-reversion
+acf, change_var_ratio all hold) after teachability calibration: v0_theta_mult prior
+widened 0.80–1.20 → 0.70–1.85, Heston warmup 21 → 8, vrp_theta_mult 1.3 → 2.0
+(commit `0912efd`). A no-agent signal probe shows entry IV-rank predicts forward
+VRP with a real but **modest** gradient: high-IV-rank forward-VRP ≈ 4× low
+(+0.0039 vs +0.0010), +EV overall, raw corr +0.03.
+
+**BV_2 (corr(credit_indicator, iv_rank) > 0.10), trained 3 seeds each, 100k steps:**
+
+| Agent | BV_2 | FF_2 | Note |
+|---|---|---|---|
+| IQN/CVaR (primary), α=0.1 | **0/3** (nan/−0.04) | 3/3 | stays ~99% FLAT — won't trade the thin edge |
+| PPO baseline | 2/3 (corr +0.10, +0.32) | 1/3 | LEARNS the conditioning but over-trades Wave-0 |
+
+**Deploy-risk diagnostic (re-deploy the SAME trained IQN checkpoints at relaxed
+risk, no retraining):** trade-freq and corr rise as conservatism relaxes —
+cvar0.1 ≈ 0% flat → cvar0.2 ≈ 0.5% → **mean ≈ 5% trade, corr +0.12 (seed 813),
++0.095 (812)**. So the agent learned only a WEAK edge AND α=0.1 deployment fully
+suppresses it.
+
+**Diagnosis:** the Heston mean-reversion VRP is a far subtler edge than Wave-1's
+exaggerated premium. PPO (EV) learns it; the tail-averse CVaR/IQN primary stays
+flat. Passing BV_2 for the PRIMARY agent needs BOTH a stronger learnable edge and
+a less-conservative curriculum deployment. **Open fork (awaiting user decision):**
+- (A) strengthen the Heston signal further (higher vrp_theta_mult and/or kappa
+  floor so forward VRP is more predictable from IV-rank) — risk: realism / GV_2
+  mean_vrp balance;
+- (B) deploy/train the curriculum CVaR agent at a higher α (0.2–0.3) — still
+  tail-aware; the headline "CVaR beats EV on tail" holds at α=0.2;
+- (C) combine (A)+(B) (most likely to pass).
+Held here per the pre-agreed checkpoint rather than tuning the generator further
+unsupervised. Per-seed detail: `runs/phase4_wave2_bv2_ff2.json`.
+
+---
+
 
 ## 2026-06-30 — Wave 1 re-validated on the expanded 35-dim observation
 
