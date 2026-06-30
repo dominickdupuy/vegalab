@@ -44,7 +44,12 @@ class HestonPriors(BaseModel):
     long-run variance.
     """
 
-    kappa: UniformPrior = Field(default_factory=lambda: UniformPrior(low=1.0, high=10.0))
+    # Kappa floor raised (was [1.0,10.0]) so variance mean-reverts FASTER within the
+    # trade horizon: a high starting variance (high IV-rank) reliably reverts DOWN
+    # over the next weeks, making forward realized vol more PREDICTABLE from IV-rank
+    # and sharpening the IV-rank -> forward-VRP gradient that BV_2 needs (without
+    # inflating the uniform premium, which would make the agent sell indiscriminately).
+    kappa: UniformPrior = Field(default_factory=lambda: UniformPrior(low=4.0, high=12.0))
     theta: UniformPrior = Field(default_factory=lambda: UniformPrior(low=0.02, high=0.09))
     sigma_v: UniformPrior = Field(default_factory=lambda: UniformPrior(low=0.2, high=1.0))
     rho: UniformPrior = Field(default_factory=lambda: UniformPrior(low=-0.9, high=-0.3))
