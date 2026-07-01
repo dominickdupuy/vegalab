@@ -68,6 +68,32 @@ vs the **150k** the Wave-1 width-256 ensemble needed to pass — on a harder sig
 **Next (in progress):** IQN-only Wave-2 retrain at 150k steps, α=0.2, same boosted
 generator, to test the undertraining hypothesis. PPO ensemble (2/3 BV) kept.
 
+### Update — "blindness to success" fix: success-weighted replay is the lever
+
+Literature (Greenberg et al., CeSoR, NeurIPS 2022) names our failure "blindness to
+success": CVaR's tail-only weighting discards the successful trajectories that would
+teach the agent to trade. Our training is already risk-neutral (soft-risk endpoint),
+so the missing half is CeSoR's cross-entropy over-sampling of successful transitions,
+implemented as **success-weighted replay** (`reward_priority_boost`, commit b6b4768).
+
+A/B on Wave 2 (IQN width-256, α=0.2, 150k):
+
+| Config | IQN trade-freq | BV_2 | FF_2 |
+|---|---|---|---|
+| uniform replay (100k & 150k) | ~0–2% (flat) | 0/3 | 3/3 |
+| reward_priority_boost=6.0 | 13–17% (trades) | 1/3 (seed +0.14) | 0/3 |
+
+**Findings:** (1) more steps alone (100k→150k) did NOT help — falsifies undertraining;
+the flat-collapse is a credit-assignment/SNR problem. (2) Success-weighted replay
+**works as a knob on trade frequency** — it broke the flat-collapse and got the CVaR
+agent trading (corr up to +0.17). (3) boost 6.0 OVER-corrects: the agent trades
+indiscriminately incl. ~100% on no-edge Wave 0 (FF fails) and conditioning dilutes.
+**Refined run (in progress):** boost 2.5 + light Wave-0 rehearsal 0.12 — the two
+compose (Wave-0 rehearsal episodes have no profitable trades, so the boost won't
+over-sample them), targeting conditional trading (BV pass) + no-edge flatness (FF
+pass). If it lands both gates, this is the reusable Wave-3–6 lever. See
+[[reference-cvar-blindness-cesor]] in memory.
+
 ---
 
 
