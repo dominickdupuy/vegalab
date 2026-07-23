@@ -1,0 +1,24 @@
+{
+  "checkpoint": "iqn_seed901_150k_diagnostic.pt",
+  "sha256": "a07911339c2304393908aaf9ccbb1d879ebffba378f7eb81be2e5e51c1c43b2d",
+  "status": "diagnostic subject only - BV_2/FF_2 NOT passed; committed as the pinned subject of the 2026-07-23 C0 diagnostics (policy b in checkpoints/README.md)",
+  "wave": 2,
+  "algo": "iqn",
+  "seed": 901,
+  "env_seed": 30000,
+  "total_timesteps": 150000,
+  "config": {
+    "hidden_sizes": [256],
+    "cvar_alpha": 0.2,
+    "epsilon_end": 0.04,
+    "bootstrap_risk": "mean",
+    "behavior_risk": "mean",
+    "reward": "curriculum MTM-only"
+  },
+  "trained": "2026-07-21 to 2026-07-23, two resumes from snapshots (scientifically equivalent, not byte-identical to an uninterrupted run)",
+  "tool": "optspread.cli.train_resumable (trained with its scratchpad precursor; identical loop, committed same day)",
+  "training_env": "torch 2.9.0 / python 3.14 (drifted from repo pin torch<2.7) - flagged, distributional math is version-stable in tests",
+  "diagnostics": "phases/phase4_c0_diagnostics_150k.json",
+  "gate_report_section": "phases/PHASE4_GATE_REPORT.md 2026-07-23 section",
+  "training_log": "phases/phase4_wave2_seed901_training.log"
+}
