@@ -1,0 +1,338 @@
+[12:17:18] FRESH start | target 150000 steps | snapshot every 5000 | seed 901 alpha=0.2 width=256 eps_end=0.04 wave=2
+[12:17:57] step 500/150000 (  0.3%) loss=  0.0000 eps=0.990 ep_rew(30)=  -7.568  12.9 st/s ETA 3h13m elapsed 0h00m
+[12:18:20] step 1000/150000 (  0.7%) loss=  0.0000 eps=0.981 ep_rew(30)=  -7.301  16.2 st/s ETA 2h33m elapsed 0h01m
+[12:18:42] step 1500/150000 (  1.0%) loss=  0.0000 eps=0.971 ep_rew(30)=  -7.207  17.8 st/s ETA 2h18m elapsed 0h01m
+[12:19:01] step 2000/150000 (  1.3%) loss=  0.0000 eps=0.962 ep_rew(30)=  -7.074  19.5 st/s ETA 2h06m elapsed 0h01m
+[12:19:19] step 2500/150000 (  1.7%) loss=  0.0000 eps=0.952 ep_rew(30)=  -6.715  20.7 st/s ETA 1h58m elapsed 0h02m
+[12:19:38] step 3000/150000 (  2.0%) loss=  0.0000 eps=0.942 ep_rew(30)=  -6.647  21.5 st/s ETA 1h53m elapsed 0h02m
+[12:19:57] step 3500/150000 (  2.3%) loss=  0.0000 eps=0.933 ep_rew(30)=  -6.542  22.0 st/s ETA 1h50m elapsed 0h02m
+[12:20:15] step 4000/150000 (  2.7%) loss=  0.0000 eps=0.923 ep_rew(30)=  -6.614  22.7 st/s ETA 1h47m elapsed 0h02m
+[12:20:33] step 4500/150000 (  3.0%) loss=  0.0000 eps=0.914 ep_rew(30)=  -6.999  23.1 st/s ETA 1h44m elapsed 0h03m
+[12:20:50] step 5000/150000 (  3.3%) loss=  0.0000 eps=0.904 ep_rew(30)=  -7.170  23.6 st/s ETA 1h42m elapsed 0h03m
+[12:20:50]   snapshot saved @ 5000
+[12:21:08] step 5500/150000 (  3.7%) loss=  0.0000 eps=0.894 ep_rew(30)=  -7.077  23.9 st/s ETA 1h40m elapsed 0h03m
+[12:21:27] step 6000/150000 (  4.0%) loss=  0.0000 eps=0.885 ep_rew(30)=  -7.063  24.1 st/s ETA 1h39m elapsed 0h04m
+[12:21:46] step 6500/150000 (  4.3%) loss=  0.0000 eps=0.875 ep_rew(30)=  -6.676  24.2 st/s ETA 1h38m elapsed 0h04m
+[12:22:06] step 7000/150000 (  4.7%) loss=  0.0000 eps=0.866 ep_rew(30)=  -6.604  24.4 st/s ETA 1h37m elapsed 0h04m
+[12:22:25] step 7500/150000 (  5.0%) loss=  0.0000 eps=0.856 ep_rew(30)=  -6.585  24.5 st/s ETA 1h37m elapsed 0h05m
+[12:22:45] step 8000/150000 (  5.3%) loss=  0.0000 eps=0.846 ep_rew(30)=  -6.679  24.5 st/s ETA 1h36m elapsed 0h05m
+[12:23:10] step 8500/150000 (  5.7%) loss=  0.0000 eps=0.837 ep_rew(30)=  -6.581  24.1 st/s ETA 1h37m elapsed 0h05m
+[12:23:34] step 9000/150000 (  6.0%) loss=  0.0000 eps=0.827 ep_rew(30)=  -6.676  23.9 st/s ETA 1h38m elapsed 0h06m
+[12:23:57] step 9500/150000 (  6.3%) loss=  0.0000 eps=0.818 ep_rew(30)=  -6.630  23.8 st/s ETA 1h38m elapsed 0h06m
+[12:24:20] step 10000/150000 (  6.7%) loss=  0.0000 eps=0.808 ep_rew(30)=  -6.653  23.7 st/s ETA 1h38m elapsed 0h07m
+[12:24:20]   snapshot saved @ 10000
+[12:24:38] step 10500/150000 (  7.0%) loss=  0.0000 eps=0.798 ep_rew(30)=  -6.704  23.9 st/s ETA 1h37m elapsed 0h07m
+[12:24:56] step 11000/150000 (  7.3%) loss=  0.0000 eps=0.789 ep_rew(30)=  -6.598  24.0 st/s ETA 1h36m elapsed 0h07m
+[12:25:14] step 11500/150000 (  7.7%) loss=  0.0000 eps=0.779 ep_rew(30)=  -6.521  24.2 st/s ETA 1h35m elapsed 0h07m
+[12:25:39] step 12000/150000 (  8.0%) loss=  0.0000 eps=0.770 ep_rew(30)=  -6.241  24.0 st/s ETA 1h35m elapsed 0h08m
+[12:26:00] step 12500/150000 (  8.3%) loss=  0.0000 eps=0.760 ep_rew(30)=  -6.390  24.0 st/s ETA 1h35m elapsed 0h08m
+[12:26:21] step 13000/150000 (  8.7%) loss=  0.0000 eps=0.750 ep_rew(30)=  -6.533  24.0 st/s ETA 1h35m elapsed 0h09m
+[12:26:42] step 13500/150000 (  9.0%) loss=  0.0000 eps=0.741 ep_rew(30)=  -6.513  24.0 st/s ETA 1h34m elapsed 0h09m
+[12:27:04] step 14000/150000 (  9.3%) loss=  0.0000 eps=0.731 ep_rew(30)=  -6.518  23.9 st/s ETA 1h34m elapsed 0h09m
+[12:27:27] step 14500/150000 (  9.7%) loss=  0.0000 eps=0.722 ep_rew(30)=  -6.283  23.8 st/s ETA 1h34m elapsed 0h10m
+[12:27:51] step 15000/150000 ( 10.0%) loss=  0.0000 eps=0.712 ep_rew(30)=  -6.038  23.7 st/s ETA 1h34m elapsed 0h10m
+[12:27:51]   snapshot saved @ 15000
+[12:28:14] step 15500/150000 ( 10.3%) loss=  0.0000 eps=0.702 ep_rew(30)=  -5.996  23.6 st/s ETA 1h34m elapsed 0h10m
+[12:28:39] step 16000/150000 ( 10.7%) loss=  0.0000 eps=0.693 ep_rew(30)=  -6.074  23.5 st/s ETA 1h35m elapsed 0h11m
+[12:28:59] step 16500/150000 ( 11.0%) loss=  0.0000 eps=0.683 ep_rew(30)=  -6.143  23.5 st/s ETA 1h34m elapsed 0h11m
+[12:29:20] step 17000/150000 ( 11.3%) loss=  0.0000 eps=0.674 ep_rew(30)=  -6.320  23.5 st/s ETA 1h34m elapsed 0h12m
+[12:29:49] step 17500/150000 ( 11.7%) loss=  0.0000 eps=0.664 ep_rew(30)=  -6.247  23.3 st/s ETA 1h34m elapsed 0h12m
+[12:30:09] step 18000/150000 ( 12.0%) loss=  0.0000 eps=0.654 ep_rew(30)=  -6.073  23.3 st/s ETA 1h34m elapsed 0h12m
+[12:30:30] step 18500/150000 ( 12.3%) loss=  0.0000 eps=0.645 ep_rew(30)=  -6.030  23.4 st/s ETA 1h33m elapsed 0h13m
+[12:30:49] step 19000/150000 ( 12.7%) loss=  0.0000 eps=0.635 ep_rew(30)=  -5.791  23.4 st/s ETA 1h33m elapsed 0h13m
+[12:31:14] step 19500/150000 ( 13.0%) loss=  0.0000 eps=0.626 ep_rew(30)=  -6.080  23.3 st/s ETA 1h33m elapsed 0h13m
+[12:31:37] step 20000/150000 ( 13.3%) loss=  0.0000 eps=0.616 ep_rew(30)=  -6.256  23.3 st/s ETA 1h33m elapsed 0h14m
+[12:31:37]   snapshot saved @ 20000
+[12:32:07] step 20500/150000 ( 13.7%) loss=  0.0000 eps=0.606 ep_rew(30)=  -6.137  23.1 st/s ETA 1h33m elapsed 0h14m
+[12:32:33] step 21000/150000 ( 14.0%) loss=  0.0000 eps=0.597 ep_rew(30)=  -5.925  23.0 st/s ETA 1h33m elapsed 0h15m
+[12:32:55] step 21500/150000 ( 14.3%) loss=  0.0000 eps=0.587 ep_rew(30)=  -5.635  23.0 st/s ETA 1h33m elapsed 0h15m
+[12:33:21] step 22000/150000 ( 14.7%) loss=  0.0000 eps=0.578 ep_rew(30)=  -5.534  22.8 st/s ETA 1h33m elapsed 0h16m
+[12:33:45] step 22500/150000 ( 15.0%) loss=  0.0000 eps=0.568 ep_rew(30)=  -5.534  22.8 st/s ETA 1h33m elapsed 0h16m
+[12:34:10] step 23000/150000 ( 15.3%) loss=  0.0000 eps=0.558 ep_rew(30)=  -5.821  22.7 st/s ETA 1h33m elapsed 0h16m
+[12:34:32] step 23500/150000 ( 15.7%) loss=  0.0000 eps=0.549 ep_rew(30)=  -5.850  22.7 st/s ETA 1h32m elapsed 0h17m
+[12:34:55] step 24000/150000 ( 16.0%) loss=  0.0000 eps=0.539 ep_rew(30)=  -5.726  22.7 st/s ETA 1h32m elapsed 0h17m
+[12:35:21] step 24500/150000 ( 16.3%) loss=  0.0000 eps=0.530 ep_rew(30)=  -5.792  22.6 st/s ETA 1h32m elapsed 0h18m
+[12:35:47] step 25000/150000 ( 16.7%) loss=  0.0000 eps=0.520 ep_rew(30)=  -5.484  22.5 st/s ETA 1h32m elapsed 0h18m
+[12:35:47]   snapshot saved @ 25000
+[12:36:14] step 25500/150000 ( 17.0%) loss=  0.0000 eps=0.510 ep_rew(30)=  -5.462  22.4 st/s ETA 1h32m elapsed 0h18m
+[12:36:40] step 26000/150000 ( 17.3%) loss=  0.0000 eps=0.501 ep_rew(30)=  -5.450  22.4 st/s ETA 1h32m elapsed 0h19m
+[12:37:01] step 26500/150000 ( 17.7%) loss=  0.0000 eps=0.491 ep_rew(30)=  -5.418  22.4 st/s ETA 1h31m elapsed 0h19m
+[12:37:22] step 27000/150000 ( 18.0%) loss=  0.0000 eps=0.482 ep_rew(30)=  -5.494  22.4 st/s ETA 1h31m elapsed 0h20m
+[12:37:42] step 27500/150000 ( 18.3%) loss=  0.0000 eps=0.472 ep_rew(30)=  -5.438  22.5 st/s ETA 1h30m elapsed 0h20m
+[12:38:05] step 28000/150000 ( 18.7%) loss=  0.0000 eps=0.462 ep_rew(30)=  -5.152  22.5 st/s ETA 1h30m elapsed 0h20m
+[12:38:29] step 28500/150000 ( 19.0%) loss=  0.0000 eps=0.453 ep_rew(30)=  -4.955  22.4 st/s ETA 1h30m elapsed 0h21m
+[12:38:52] step 29000/150000 ( 19.3%) loss=  0.0000 eps=0.443 ep_rew(30)=  -4.800  22.4 st/s ETA 1h29m elapsed 0h21m
+[12:39:15] step 29500/150000 ( 19.7%) loss=  0.0000 eps=0.434 ep_rew(30)=  -4.534  22.4 st/s ETA 1h29m elapsed 0h21m
+[12:39:37] step 30000/150000 ( 20.0%) loss=  0.1751 eps=0.424 ep_rew(30)=  -4.650  22.4 st/s ETA 1h29m elapsed 0h22m
+[12:39:37]   snapshot saved @ 30000
+[12:40:14] step 30500/150000 ( 20.3%) loss=  0.1488 eps=0.414 ep_rew(30)=  -4.258  22.2 st/s ETA 1h29m elapsed 0h22m
+[12:40:53] step 31000/150000 ( 20.7%) loss=  0.1327 eps=0.405 ep_rew(30)=  -3.777  21.9 st/s ETA 1h30m elapsed 0h23m
+[12:41:28] step 31500/150000 ( 21.0%) loss=  0.1631 eps=0.395 ep_rew(30)=  -3.479  21.7 st/s ETA 1h30m elapsed 0h24m
+[12:42:07] step 32000/150000 ( 21.3%) loss=  0.0972 eps=0.386 ep_rew(30)=  -3.296  21.5 st/s ETA 1h31m elapsed 0h24m
+[12:42:46] step 32500/150000 ( 21.7%) loss=  0.1167 eps=0.376 ep_rew(30)=  -3.223  21.3 st/s ETA 1h32m elapsed 0h25m
+[12:43:25] step 33000/150000 ( 22.0%) loss=  0.1348 eps=0.366 ep_rew(30)=  -3.103  21.1 st/s ETA 1h32m elapsed 0h26m
+[12:44:03] step 33500/150000 ( 22.3%) loss=  0.1257 eps=0.357 ep_rew(30)=  -3.113  20.9 st/s ETA 1h32m elapsed 0h26m
+[12:44:42] step 34000/150000 ( 22.7%) loss=  0.1236 eps=0.347 ep_rew(30)=  -2.933  20.7 st/s ETA 1h33m elapsed 0h27m
+[12:45:23] step 34500/150000 ( 23.0%) loss=  0.1348 eps=0.338 ep_rew(30)=  -2.919  20.5 st/s ETA 1h33m elapsed 0h28m
+[12:46:01] step 35000/150000 ( 23.3%) loss=  0.3326 eps=0.328 ep_rew(30)=  -2.900  20.3 st/s ETA 1h34m elapsed 0h28m
+[12:46:01]   snapshot saved @ 35000
+[12:46:38] step 35500/150000 ( 23.7%) loss=  0.1956 eps=0.318 ep_rew(30)=  -2.676  20.2 st/s ETA 1h34m elapsed 0h29m
+[12:47:15] step 36000/150000 ( 24.0%) loss=  0.2131 eps=0.309 ep_rew(30)=  -2.384  20.0 st/s ETA 1h34m elapsed 0h29m
+[12:47:55] step 36500/150000 ( 24.3%) loss=  0.1245 eps=0.299 ep_rew(30)=  -2.545  19.9 st/s ETA 1h35m elapsed 0h30m
+[12:48:29] step 37000/150000 ( 24.7%) loss=  0.1050 eps=0.290 ep_rew(30)=  -2.638  19.8 st/s ETA 1h35m elapsed 0h31m
+[12:49:12] step 37500/150000 ( 25.0%) loss=  0.1364 eps=0.280 ep_rew(30)=  -2.656  19.6 st/s ETA 1h35m elapsed 0h31m
+[12:49:51] step 38000/150000 ( 25.3%) loss=  0.1021 eps=0.270 ep_rew(30)=  -2.634  19.5 st/s ETA 1h35m elapsed 0h32m
+[12:50:32] step 38500/150000 ( 25.7%) loss=  0.2056 eps=0.261 ep_rew(30)=  -2.258  19.3 st/s ETA 1h36m elapsed 0h33m
+[12:51:09] step 39000/150000 ( 26.0%) loss=  0.2267 eps=0.251 ep_rew(30)=  -2.245  19.2 st/s ETA 1h36m elapsed 0h33m
+[12:51:44] step 39500/150000 ( 26.3%) loss=  0.1358 eps=0.242 ep_rew(30)=  -2.372  19.1 st/s ETA 1h36m elapsed 0h34m
+[12:52:08] step 40000/150000 ( 26.7%) loss=  0.1516 eps=0.232 ep_rew(30)=  -2.349  19.1 st/s ETA 1h35m elapsed 0h34m
+[12:52:08]   snapshot saved @ 40000
+[12:52:31] step 40500/150000 ( 27.0%) loss=  0.1480 eps=0.222 ep_rew(30)=  -2.437  19.2 st/s ETA 1h35m elapsed 0h35m
+[12:52:56] step 41000/150000 ( 27.3%) loss=  0.3990 eps=0.213 ep_rew(30)=  -2.236  19.2 st/s ETA 1h34m elapsed 0h35m
+[12:53:20] step 41500/150000 ( 27.7%) loss=  0.2086 eps=0.203 ep_rew(30)=  -2.300  19.2 st/s ETA 1h34m elapsed 0h36m
+[12:53:44] step 42000/150000 ( 28.0%) loss=  0.2125 eps=0.194 ep_rew(30)=  -2.243  19.2 st/s ETA 1h33m elapsed 0h36m
+[12:54:07] step 42500/150000 ( 28.3%) loss=  0.1358 eps=0.184 ep_rew(30)=  -2.199  19.2 st/s ETA 1h33m elapsed 0h36m
+[12:54:28] step 43000/150000 ( 28.7%) loss=  0.1070 eps=0.174 ep_rew(30)=  -2.057  19.3 st/s ETA 1h32m elapsed 0h37m
+[12:54:50] step 43500/150000 ( 29.0%) loss=  0.1321 eps=0.165 ep_rew(30)=  -1.614  19.3 st/s ETA 1h31m elapsed 0h37m
+[12:55:12] step 44000/150000 ( 29.3%) loss=  0.1264 eps=0.155 ep_rew(30)=  -1.240  19.4 st/s ETA 1h31m elapsed 0h37m
+[12:55:34] step 44500/150000 ( 29.7%) loss=  0.1088 eps=0.146 ep_rew(30)=  -1.179  19.4 st/s ETA 1h30m elapsed 0h38m
+[12:55:58] step 45000/150000 ( 30.0%) loss=  0.0682 eps=0.136 ep_rew(30)=  -1.299  19.4 st/s ETA 1h30m elapsed 0h38m
+[12:55:58]   snapshot saved @ 45000
+[12:56:20] step 45500/150000 ( 30.3%) loss=  0.1279 eps=0.126 ep_rew(30)=  -1.280  19.4 st/s ETA 1h29m elapsed 0h39m
+[12:56:42] step 46000/150000 ( 30.7%) loss=  0.2386 eps=0.117 ep_rew(30)=  -1.241  19.5 st/s ETA 1h29m elapsed 0h39m
+[12:57:11] step 46500/150000 ( 31.0%) loss=  0.3210 eps=0.107 ep_rew(30)=  -1.453  19.4 st/s ETA 1h28m elapsed 0h39m
+[12:58:33] step 47000/150000 ( 31.3%) loss=  0.1899 eps=0.098 ep_rew(30)=  -1.259  19.0 st/s ETA 1h30m elapsed 0h41m
+[12:59:59] step 47500/150000 ( 31.7%) loss=  0.1852 eps=0.088 ep_rew(30)=  -1.288  18.5 st/s ETA 1h32m elapsed 0h42m
+[13:01:15] step 48000/150000 ( 32.0%) loss=  0.2334 eps=0.078 ep_rew(30)=  -1.426  18.2 st/s ETA 1h33m elapsed 0h43m
+[13:01:41] step 48500/150000 ( 32.3%) loss=  0.2668 eps=0.069 ep_rew(30)=  -0.950  18.2 st/s ETA 1h32m elapsed 0h44m
+[13:02:05] step 49000/150000 ( 32.7%) loss=  0.2780 eps=0.059 ep_rew(30)=  -0.903  18.2 st/s ETA 1h32m elapsed 0h44m
+[13:02:28] step 49500/150000 ( 33.0%) loss=  0.1727 eps=0.050 ep_rew(30)=  -0.785  18.3 st/s ETA 1h31m elapsed 0h45m
+[13:02:58] step 50000/150000 ( 33.3%) loss=  0.2401 eps=0.040 ep_rew(30)=  -0.898  18.2 st/s ETA 1h31m elapsed 0h45m
+[13:02:59]   snapshot saved @ 50000
+[13:04:04] step 50500/150000 ( 33.7%) loss=  0.4491 eps=0.040 ep_rew(30)=  -0.591  18.0 st/s ETA 1h32m elapsed 0h46m
+[13:05:00] step 51000/150000 ( 34.0%) loss=  0.1652 eps=0.040 ep_rew(30)=  -0.630  17.8 st/s ETA 1h32m elapsed 0h47m
+[13:05:56] step 51500/150000 ( 34.3%) loss=  0.2350 eps=0.040 ep_rew(30)=  -0.944  17.7 st/s ETA 1h32m elapsed 0h48m
+[13:21:10] RESUMED from step 50000 | target 150000 steps | snapshot every 5000 | seed 901 alpha=0.2 width=256 eps_end=0.04 wave=2
+[13:26:18] step 50500/150000 ( 33.7%) loss=  0.4579 eps=0.040 ep_rew(30)=  -0.879   1.6 st/s ETA 17h01m elapsed 0h50m
+[13:29:10] step 51000/150000 ( 34.0%) loss=  0.1825 eps=0.040 ep_rew(30)=  -0.647   2.1 st/s ETA 13h11m elapsed 0h53m
+[13:32:17] step 51500/150000 ( 34.3%) loss=  0.2324 eps=0.040 ep_rew(30)=  -0.653   2.2 st/s ETA 12h09m elapsed 0h56m
+[13:32:46] step 52000/150000 ( 34.7%) loss=  0.2317 eps=0.040 ep_rew(30)=  -0.611   2.9 st/s ETA 9h27m elapsed 0h57m
+[13:33:07] step 52500/150000 ( 35.0%) loss=  0.1266 eps=0.040 ep_rew(30)=  -0.671   3.5 st/s ETA 7h46m elapsed 0h57m
+[13:33:29] step 53000/150000 ( 35.3%) loss=  0.1427 eps=0.040 ep_rew(30)=  -0.685   4.1 st/s ETA 6h37m elapsed 0h57m
+[13:33:52] step 53500/150000 ( 35.7%) loss=  0.2190 eps=0.040 ep_rew(30)=  -0.700   4.6 st/s ETA 5h50m elapsed 0h58m
+[13:34:13] step 54000/150000 ( 36.0%) loss=  0.2213 eps=0.040 ep_rew(30)=  -0.580   5.1 st/s ETA 5h13m elapsed 0h58m
+[13:34:34] step 54500/150000 ( 36.3%) loss=  0.4808 eps=0.040 ep_rew(30)=  -0.577   5.6 st/s ETA 4h44m elapsed 0h59m
+[13:34:58] step 55000/150000 ( 36.7%) loss=  0.2604 eps=0.040 ep_rew(30)=  -0.526   6.0 st/s ETA 4h22m elapsed 0h59m
+[13:34:58]   snapshot saved @ 55000
+[13:35:26] step 55500/150000 ( 37.0%) loss=  0.2696 eps=0.040 ep_rew(30)=  -0.437   6.4 st/s ETA 4h05m elapsed 0h59m
+[13:35:51] step 56000/150000 ( 37.3%) loss=  0.3147 eps=0.040 ep_rew(30)=  -0.288   6.8 st/s ETA 3h49m elapsed 1h00m
+[13:36:13] step 56500/150000 ( 37.7%) loss=  0.2397 eps=0.040 ep_rew(30)=  -0.139   7.2 st/s ETA 3h36m elapsed 1h00m
+[13:36:33] step 57000/150000 ( 38.0%) loss=  0.2498 eps=0.040 ep_rew(30)=  -0.188   7.6 st/s ETA 3h24m elapsed 1h01m
+[13:36:53] step 57500/150000 ( 38.3%) loss=  0.2055 eps=0.040 ep_rew(30)=  -0.180   8.0 st/s ETA 3h13m elapsed 1h01m
+[13:37:14] step 58000/150000 ( 38.7%) loss=  0.2298 eps=0.040 ep_rew(30)=  -0.241   8.3 st/s ETA 3h04m elapsed 1h01m
+[13:37:34] step 58500/150000 ( 39.0%) loss=  0.2267 eps=0.040 ep_rew(30)=  -0.284   8.6 st/s ETA 2h56m elapsed 1h02m
+[13:37:54] step 59000/150000 ( 39.3%) loss=  0.2514 eps=0.040 ep_rew(30)=  -0.397   9.0 st/s ETA 2h49m elapsed 1h02m
+[13:38:15] step 59500/150000 ( 39.7%) loss=  0.2095 eps=0.040 ep_rew(30)=  -0.583   9.3 st/s ETA 2h42m elapsed 1h02m
+[13:38:35] step 60000/150000 ( 40.0%) loss=  0.1434 eps=0.040 ep_rew(30)=  -0.590   9.6 st/s ETA 2h36m elapsed 1h03m
+[13:38:35]   snapshot saved @ 60000
+[13:38:55] step 60500/150000 ( 40.3%) loss=  0.1785 eps=0.040 ep_rew(30)=  -0.553   9.9 st/s ETA 2h31m elapsed 1h03m
+[13:39:16] step 61000/150000 ( 40.7%) loss=  0.3013 eps=0.040 ep_rew(30)=  -0.730  10.1 st/s ETA 2h26m elapsed 1h03m
+[13:39:37] step 61500/150000 ( 41.0%) loss=  0.2276 eps=0.040 ep_rew(30)=  -0.740  10.4 st/s ETA 2h21m elapsed 1h04m
+[13:40:03] step 62000/150000 ( 41.3%) loss=  0.1776 eps=0.040 ep_rew(30)=  -0.725  10.6 st/s ETA 2h18m elapsed 1h04m
+[13:40:24] step 62500/150000 ( 41.7%) loss=  0.2445 eps=0.040 ep_rew(30)=  -0.541  10.8 st/s ETA 2h14m elapsed 1h04m
+[13:40:48] step 63000/150000 ( 42.0%) loss=  0.3208 eps=0.040 ep_rew(30)=  -0.615  11.0 st/s ETA 2h11m elapsed 1h05m
+[13:41:11] step 63500/150000 ( 42.3%) loss=  0.2067 eps=0.040 ep_rew(30)=  -0.551  11.2 st/s ETA 2h08m elapsed 1h05m
+[13:41:33] step 64000/150000 ( 42.7%) loss=  0.3301 eps=0.040 ep_rew(30)=  -0.516  11.5 st/s ETA 2h05m elapsed 1h06m
+[13:41:57] step 64500/150000 ( 43.0%) loss=  0.2226 eps=0.040 ep_rew(30)=  -0.702  11.6 st/s ETA 2h02m elapsed 1h06m
+[13:42:25] step 65000/150000 ( 43.3%) loss=  0.1572 eps=0.040 ep_rew(30)=  -0.596  11.8 st/s ETA 2h00m elapsed 1h06m
+[13:42:25]   snapshot saved @ 65000
+[13:42:53] step 65500/150000 ( 43.7%) loss=  0.2254 eps=0.040 ep_rew(30)=  -0.730  11.9 st/s ETA 1h58m elapsed 1h07m
+[13:43:16] step 66000/150000 ( 44.0%) loss=  0.3226 eps=0.040 ep_rew(30)=  -0.732  12.1 st/s ETA 1h56m elapsed 1h07m
+[13:43:38] step 66500/150000 ( 44.3%) loss=  0.2178 eps=0.040 ep_rew(30)=  -0.613  12.2 st/s ETA 1h53m elapsed 1h08m
+[13:43:59] step 67000/150000 ( 44.7%) loss=  0.2090 eps=0.040 ep_rew(30)=  -0.586  12.4 st/s ETA 1h51m elapsed 1h08m
+[13:44:22] step 67500/150000 ( 45.0%) loss=  0.3303 eps=0.040 ep_rew(30)=  -0.685  12.6 st/s ETA 1h49m elapsed 1h08m
+[13:44:44] step 68000/150000 ( 45.3%) loss=  0.5379 eps=0.040 ep_rew(30)=  -0.906  12.7 st/s ETA 1h47m elapsed 1h09m
+[13:45:06] step 68500/150000 ( 45.7%) loss=  0.2811 eps=0.040 ep_rew(30)=  -1.023  12.9 st/s ETA 1h45m elapsed 1h09m
+[13:45:28] step 69000/150000 ( 46.0%) loss=  0.3025 eps=0.040 ep_rew(30)=  -0.893  13.0 st/s ETA 1h43m elapsed 1h09m
+[13:45:50] step 69500/150000 ( 46.3%) loss=  0.1541 eps=0.040 ep_rew(30)=  -0.847  13.2 st/s ETA 1h41m elapsed 1h10m
+[13:46:11] step 70000/150000 ( 46.7%) loss=  0.2350 eps=0.040 ep_rew(30)=  -0.725  13.3 st/s ETA 1h40m elapsed 1h10m
+[13:46:11]   snapshot saved @ 70000
+[13:46:32] step 70500/150000 ( 47.0%) loss=  0.2620 eps=0.040 ep_rew(30)=  -1.008  13.5 st/s ETA 1h38m elapsed 1h11m
+[13:46:53] step 71000/150000 ( 47.3%) loss=  0.2440 eps=0.040 ep_rew(30)=  -0.940  13.6 st/s ETA 1h36m elapsed 1h11m
+[13:47:14] step 71500/150000 ( 47.7%) loss=  0.2662 eps=0.040 ep_rew(30)=  -0.804  13.7 st/s ETA 1h35m elapsed 1h11m
+[13:47:35] step 72000/150000 ( 48.0%) loss=  0.3476 eps=0.040 ep_rew(30)=  -0.706  13.9 st/s ETA 1h33m elapsed 1h12m
+[13:47:56] step 72500/150000 ( 48.3%) loss=  0.3804 eps=0.040 ep_rew(30)=  -0.476  14.0 st/s ETA 1h32m elapsed 1h12m
+[13:48:18] step 73000/150000 ( 48.7%) loss=  0.3904 eps=0.040 ep_rew(30)=  -0.330  14.1 st/s ETA 1h30m elapsed 1h12m
+[13:48:40] step 73500/150000 ( 49.0%) loss=  0.2197 eps=0.040 ep_rew(30)=  -0.304  14.2 st/s ETA 1h29m elapsed 1h13m
+[13:49:09] step 74000/150000 ( 49.3%) loss=  0.3068 eps=0.040 ep_rew(30)=  -0.410  14.3 st/s ETA 1h28m elapsed 1h13m
+[13:49:36] step 74500/150000 ( 49.7%) loss=  0.2877 eps=0.040 ep_rew(30)=  -0.511  14.4 st/s ETA 1h27m elapsed 1h14m
+[13:50:03] step 75000/150000 ( 50.0%) loss=  0.4483 eps=0.040 ep_rew(30)=  -0.635  14.4 st/s ETA 1h26m elapsed 1h14m
+[13:50:03]   snapshot saved @ 75000
+[13:50:37] step 75500/150000 ( 50.3%) loss=  0.3260 eps=0.040 ep_rew(30)=  -0.600  14.4 st/s ETA 1h26m elapsed 1h15m
+[13:51:03] step 76000/150000 ( 50.7%) loss=  0.3144 eps=0.040 ep_rew(30)=  -0.563  14.5 st/s ETA 1h25m elapsed 1h15m
+[13:51:29] step 76500/150000 ( 51.0%) loss=  0.4481 eps=0.040 ep_rew(30)=  -0.661  14.6 st/s ETA 1h24m elapsed 1h15m
+[13:51:55] step 77000/150000 ( 51.3%) loss=  0.2967 eps=0.040 ep_rew(30)=  -0.469  14.6 st/s ETA 1h23m elapsed 1h16m
+[13:52:23] step 77500/150000 ( 51.7%) loss=  0.2871 eps=0.040 ep_rew(30)=  -0.331  14.7 st/s ETA 1h22m elapsed 1h16m
+[13:52:52] step 78000/150000 ( 52.0%) loss=  0.1969 eps=0.040 ep_rew(30)=  -0.793  14.7 st/s ETA 1h21m elapsed 1h17m
+[13:53:21] step 78500/150000 ( 52.3%) loss=  0.3045 eps=0.040 ep_rew(30)=  -0.461  14.8 st/s ETA 1h20m elapsed 1h17m
+[13:53:51] step 79000/150000 ( 52.7%) loss=  0.2299 eps=0.040 ep_rew(30)=  -0.522  14.8 st/s ETA 1h20m elapsed 1h18m
+[13:55:45] step 79500/150000 ( 53.0%) loss=  0.2778 eps=0.040 ep_rew(30)=  -0.503  14.2 st/s ETA 1h22m elapsed 1h20m
+[13:57:50] step 80000/150000 ( 53.3%) loss=  0.3308 eps=0.040 ep_rew(30)=  -0.213  13.6 st/s ETA 1h25m elapsed 1h22m
+[13:57:50]   snapshot saved @ 80000
+[14:00:22] step 80500/150000 ( 53.7%) loss=  0.2106 eps=0.040 ep_rew(30)=  -0.414  13.0 st/s ETA 1h29m elapsed 1h24m
+[14:03:05] step 81000/150000 ( 54.0%) loss=  0.2462 eps=0.040 ep_rew(30)=  -0.218  12.3 st/s ETA 1h33m elapsed 1h27m
+[14:05:09] step 81500/150000 ( 54.3%) loss=  0.2676 eps=0.040 ep_rew(30)=  -0.361  11.9 st/s ETA 1h35m elapsed 1h29m
+[14:07:30] step 82000/150000 ( 54.7%) loss=  0.2835 eps=0.040 ep_rew(30)=  -0.599  11.5 st/s ETA 1h38m elapsed 1h31m
+[14:08:48] step 82500/150000 ( 55.0%) loss=  0.3137 eps=0.040 ep_rew(30)=  -0.600  11.4 st/s ETA 1h38m elapsed 1h33m
+[14:09:24] step 83000/150000 ( 55.3%) loss=  0.3818 eps=0.040 ep_rew(30)=  -0.627  11.4 st/s ETA 1h37m elapsed 1h33m
+[14:10:11] step 83500/150000 ( 55.7%) loss=  0.1973 eps=0.040 ep_rew(30)=  -0.523  11.4 st/s ETA 1h37m elapsed 1h34m
+[14:11:52] step 84000/150000 ( 56.0%) loss=  0.3247 eps=0.040 ep_rew(30)=  -0.510  11.2 st/s ETA 1h38m elapsed 1h36m
+[14:14:07] step 84500/150000 ( 56.3%) loss=  0.1996 eps=0.040 ep_rew(30)=  -0.726  10.9 st/s ETA 1h40m elapsed 1h38m
+[14:16:03] step 85000/150000 ( 56.7%) loss=  0.3235 eps=0.040 ep_rew(30)=  -0.720  10.6 st/s ETA 1h41m elapsed 1h40m
+[14:16:03]   snapshot saved @ 85000
+[14:19:27] step 85500/150000 ( 57.0%) loss=  0.4207 eps=0.040 ep_rew(30)=  -0.651  10.2 st/s ETA 1h45m elapsed 1h43m
+[14:22:05] step 86000/150000 ( 57.3%) loss=  0.2425 eps=0.040 ep_rew(30)=  -0.477   9.9 st/s ETA 1h48m elapsed 1h46m
+[14:23:18] step 86500/150000 ( 57.7%) loss=  0.2999 eps=0.040 ep_rew(30)=  -0.390   9.8 st/s ETA 1h48m elapsed 1h47m
+[14:23:47] step 87000/150000 ( 58.0%) loss=  0.3949 eps=0.040 ep_rew(30)=  -0.449   9.8 st/s ETA 1h46m elapsed 1h48m
+[14:25:07] step 87500/150000 ( 58.3%) loss=  0.2014 eps=0.040 ep_rew(30)=  -0.554   9.8 st/s ETA 1h46m elapsed 1h49m
+[14:25:45] step 88000/150000 ( 58.7%) loss=  0.3772 eps=0.040 ep_rew(30)=  -0.906   9.8 st/s ETA 1h45m elapsed 1h50m
+[14:26:58] step 88500/150000 ( 59.0%) loss=  0.2867 eps=0.040 ep_rew(30)=  -0.947   9.8 st/s ETA 1h45m elapsed 1h51m
+[14:27:56] step 89000/150000 ( 59.3%) loss=  0.2368 eps=0.040 ep_rew(30)=  -0.945   9.7 st/s ETA 1h44m elapsed 1h52m
+[14:29:38] step 89500/150000 ( 59.7%) loss=  0.2261 eps=0.040 ep_rew(30)=  -0.674   9.6 st/s ETA 1h44m elapsed 1h54m
+[14:32:54] step 90000/150000 ( 60.0%) loss=  0.2947 eps=0.040 ep_rew(30)=  -0.870   9.3 st/s ETA 1h47m elapsed 1h57m
+[14:32:54]   snapshot saved @ 90000
+[14:33:33] step 90500/150000 ( 60.3%) loss=  0.2725 eps=0.040 ep_rew(30)=  -1.062   9.3 st/s ETA 1h46m elapsed 1h58m
+[14:33:52] step 91000/150000 ( 60.7%) loss=  0.2519 eps=0.040 ep_rew(30)=  -1.094   9.4 st/s ETA 1h44m elapsed 1h58m
+[14:34:12] step 91500/150000 ( 61.0%) loss=  0.4366 eps=0.040 ep_rew(30)=  -1.068   9.5 st/s ETA 1h42m elapsed 1h58m
+[14:34:32] step 92000/150000 ( 61.3%) loss=  0.2130 eps=0.040 ep_rew(30)=  -0.580   9.5 st/s ETA 1h41m elapsed 1h59m
+[14:34:52] step 92500/150000 ( 61.7%) loss=  0.3439 eps=0.040 ep_rew(30)=  -0.493   9.6 st/s ETA 1h39m elapsed 1h59m
+[14:35:12] step 93000/150000 ( 62.0%) loss=  0.2018 eps=0.040 ep_rew(30)=  -0.698   9.7 st/s ETA 1h38m elapsed 1h59m
+[14:35:31] step 93500/150000 ( 62.3%) loss=  0.2374 eps=0.040 ep_rew(30)=  -0.730   9.8 st/s ETA 1h36m elapsed 2h00m
+[14:35:52] step 94000/150000 ( 62.7%) loss=  0.3751 eps=0.040 ep_rew(30)=  -1.094   9.8 st/s ETA 1h35m elapsed 2h00m
+[14:36:11] step 94500/150000 ( 63.0%) loss=  0.6076 eps=0.040 ep_rew(30)=  -1.242   9.9 st/s ETA 1h33m elapsed 2h00m
+[14:36:31] step 95000/150000 ( 63.3%) loss=  0.2083 eps=0.040 ep_rew(30)=  -0.987  10.0 st/s ETA 1h32m elapsed 2h01m
+[14:36:31]   snapshot saved @ 95000
+[14:36:51] step 95500/150000 ( 63.7%) loss=  0.2499 eps=0.040 ep_rew(30)=  -0.698  10.0 st/s ETA 1h30m elapsed 2h01m
+[14:37:11] step 96000/150000 ( 64.0%) loss=  0.2609 eps=0.040 ep_rew(30)=  -0.458  10.1 st/s ETA 1h29m elapsed 2h01m
+[14:37:30] step 96500/150000 ( 64.3%) loss=  0.2995 eps=0.040 ep_rew(30)=  -0.105  10.2 st/s ETA 1h27m elapsed 2h02m
+[14:37:50] step 97000/150000 ( 64.7%) loss=  0.3353 eps=0.040 ep_rew(30)=  -0.288  10.2 st/s ETA 1h26m elapsed 2h02m
+[14:38:10] step 97500/150000 ( 65.0%) loss=  0.2363 eps=0.040 ep_rew(30)=  -0.196  10.3 st/s ETA 1h25m elapsed 2h02m
+[14:38:30] step 98000/150000 ( 65.3%) loss=  0.2976 eps=0.040 ep_rew(30)=  -0.196  10.3 st/s ETA 1h23m elapsed 2h02m
+[14:38:50] step 98500/150000 ( 65.7%) loss=  0.2327 eps=0.040 ep_rew(30)=  -0.252  10.4 st/s ETA 1h22m elapsed 2h03m
+[14:39:09] step 99000/150000 ( 66.0%) loss=  0.3154 eps=0.040 ep_rew(30)=  -0.113  10.5 st/s ETA 1h21m elapsed 2h03m
+[14:39:29] step 99500/150000 ( 66.3%) loss=  0.3218 eps=0.040 ep_rew(30)=  -0.284  10.5 st/s ETA 1h19m elapsed 2h03m
+[14:39:49] step 100000/150000 ( 66.7%) loss=  0.2387 eps=0.040 ep_rew(30)=  -0.452  10.6 st/s ETA 1h18m elapsed 2h04m
+[14:39:49]   snapshot saved @ 100000
+[14:40:20] step 100500/150000 ( 67.0%) loss=  0.2777 eps=0.040 ep_rew(30)=  -0.306  10.6 st/s ETA 1h17m elapsed 2h04m
+[14:40:42] step 101000/150000 ( 67.3%) loss=  0.2733 eps=0.040 ep_rew(30)=  -0.446  10.7 st/s ETA 1h16m elapsed 2h05m
+[14:41:02] step 101500/150000 ( 67.7%) loss=  0.2439 eps=0.040 ep_rew(30)=  -0.710  10.7 st/s ETA 1h15m elapsed 2h05m
+[14:41:23] step 102000/150000 ( 68.0%) loss=  0.2179 eps=0.040 ep_rew(30)=  -0.775  10.8 st/s ETA 1h14m elapsed 2h05m
+[14:41:44] step 102500/150000 ( 68.3%) loss=  0.2416 eps=0.040 ep_rew(30)=  -1.163  10.9 st/s ETA 1h12m elapsed 2h06m
+[14:42:05] step 103000/150000 ( 68.7%) loss=  0.4645 eps=0.040 ep_rew(30)=  -0.793  10.9 st/s ETA 1h11m elapsed 2h06m
+[14:42:27] step 103500/150000 ( 69.0%) loss=  0.2130 eps=0.040 ep_rew(30)=  -0.552  11.0 st/s ETA 1h10m elapsed 2h06m
+[14:42:48] step 104000/150000 ( 69.3%) loss=  0.2385 eps=0.040 ep_rew(30)=  -0.728  11.0 st/s ETA 1h09m elapsed 2h07m
+[14:43:09] step 104500/150000 ( 69.7%) loss=  0.4472 eps=0.040 ep_rew(30)=  -0.735  11.1 st/s ETA 1h08m elapsed 2h07m
+[14:43:30] step 105000/150000 ( 70.0%) loss=  0.2154 eps=0.040 ep_rew(30)=  -0.648  11.1 st/s ETA 1h07m elapsed 2h07m
+[14:43:30]   snapshot saved @ 105000
+[14:43:50] step 105500/150000 ( 70.3%) loss=  0.3063 eps=0.040 ep_rew(30)=  -0.622  11.2 st/s ETA 1h06m elapsed 2h08m
+[13:53:31] RESUMED from step 105000 | target 150000 steps | snapshot every 5000 | seed 901 alpha=0.2 width=256 eps_end=0.04 wave=2
+[13:54:02] step 105500/150000 ( 70.3%) loss=  0.3353 eps=0.040 ep_rew(30)=  -1.905  16.0 st/s ETA 0h46m elapsed 2h08m
+[13:54:31] step 106000/150000 ( 70.7%) loss=  0.2901 eps=0.040 ep_rew(30)=  -1.445  16.5 st/s ETA 0h44m elapsed 2h09m
+[13:55:10] step 106500/150000 ( 71.0%) loss=  0.3982 eps=0.040 ep_rew(30)=  -1.414  15.1 st/s ETA 0h48m elapsed 2h09m
+[13:55:49] step 107000/150000 ( 71.3%) loss=  0.2193 eps=0.040 ep_rew(30)=  -1.063  14.4 st/s ETA 0h49m elapsed 2h10m
+[13:56:22] step 107500/150000 ( 71.7%) loss=  0.2288 eps=0.040 ep_rew(30)=  -0.869  14.6 st/s ETA 0h48m elapsed 2h10m
+[13:57:14] step 108000/150000 ( 72.0%) loss=  0.2877 eps=0.040 ep_rew(30)=  -0.939  13.4 st/s ETA 0h52m elapsed 2h11m
+[13:58:05] step 108500/150000 ( 72.3%) loss=  0.2603 eps=0.040 ep_rew(30)=  -0.716  12.8 st/s ETA 0h54m elapsed 2h12m
+[13:58:49] step 109000/150000 ( 72.7%) loss=  0.3326 eps=0.040 ep_rew(30)=  -0.847  12.6 st/s ETA 0h54m elapsed 2h13m
+[13:59:29] step 109500/150000 ( 73.0%) loss=  0.2804 eps=0.040 ep_rew(30)=  -0.899  12.6 st/s ETA 0h53m elapsed 2h13m
+[14:00:18] step 110000/150000 ( 73.3%) loss=  0.2697 eps=0.040 ep_rew(30)=  -0.957  12.3 st/s ETA 0h54m elapsed 2h14m
+[14:00:18]   snapshot saved @ 110000
+[14:01:06] step 110500/150000 ( 73.7%) loss=  0.1990 eps=0.040 ep_rew(30)=  -1.027  12.1 st/s ETA 0h54m elapsed 2h15m
+[14:01:38] step 111000/150000 ( 74.0%) loss=  0.4527 eps=0.040 ep_rew(30)=  -1.217  12.3 st/s ETA 0h52m elapsed 2h16m
+[14:01:58] step 111500/150000 ( 74.3%) loss=  0.3349 eps=0.040 ep_rew(30)=  -1.073  12.8 st/s ETA 0h50m elapsed 2h16m
+[14:02:17] step 112000/150000 ( 74.7%) loss=  0.2643 eps=0.040 ep_rew(30)=  -0.896  13.3 st/s ETA 0h47m elapsed 2h16m
+[14:02:37] step 112500/150000 ( 75.0%) loss=  0.3146 eps=0.040 ep_rew(30)=  -0.837  13.7 st/s ETA 0h45m elapsed 2h17m
+[14:02:56] step 113000/150000 ( 75.3%) loss=  0.2704 eps=0.040 ep_rew(30)=  -0.636  14.2 st/s ETA 0h43m elapsed 2h17m
+[14:03:15] step 113500/150000 ( 75.7%) loss=  0.3523 eps=0.040 ep_rew(30)=  -0.892  14.5 st/s ETA 0h41m elapsed 2h17m
+[14:03:50] step 114000/150000 ( 76.0%) loss=  0.3250 eps=0.040 ep_rew(30)=  -1.023  14.5 st/s ETA 0h41m elapsed 2h18m
+[14:04:37] step 114500/150000 ( 76.3%) loss=  0.3692 eps=0.040 ep_rew(30)=  -1.301  14.3 st/s ETA 0h41m elapsed 2h19m
+[14:04:59] step 115000/150000 ( 76.7%) loss=  0.2919 eps=0.040 ep_rew(30)=  -1.322  14.5 st/s ETA 0h40m elapsed 2h19m
+[14:04:59]   snapshot saved @ 115000
+[14:05:18] step 115500/150000 ( 77.0%) loss=  0.2729 eps=0.040 ep_rew(30)=  -1.207  14.8 st/s ETA 0h38m elapsed 2h19m
+[14:05:36] step 116000/150000 ( 77.3%) loss=  0.2512 eps=0.040 ep_rew(30)=  -1.206  15.2 st/s ETA 0h37m elapsed 2h20m
+[14:05:55] step 116500/150000 ( 77.7%) loss=  0.4443 eps=0.040 ep_rew(30)=  -1.009  15.5 st/s ETA 0h36m elapsed 2h20m
+[14:06:14] step 117000/150000 ( 78.0%) loss=  0.2599 eps=0.040 ep_rew(30)=  -0.930  15.7 st/s ETA 0h34m elapsed 2h20m
+[14:06:32] step 117500/150000 ( 78.3%) loss=  0.1659 eps=0.040 ep_rew(30)=  -1.212  16.0 st/s ETA 0h33m elapsed 2h21m
+[14:06:51] step 118000/150000 ( 78.7%) loss=  0.3311 eps=0.040 ep_rew(30)=  -1.070  16.3 st/s ETA 0h32m elapsed 2h21m
+[14:07:09] step 118500/150000 ( 79.0%) loss=  0.4295 eps=0.040 ep_rew(30)=  -1.111  16.5 st/s ETA 0h31m elapsed 2h21m
+[14:07:33] step 119000/150000 ( 79.3%) loss=  0.3680 eps=0.040 ep_rew(30)=  -1.262  16.6 st/s ETA 0h31m elapsed 2h22m
+[14:08:19] step 119500/150000 ( 79.7%) loss=  0.2447 eps=0.040 ep_rew(30)=  -0.798  16.3 st/s ETA 0h31m elapsed 2h22m
+[14:09:00] step 120000/150000 ( 80.0%) loss=  0.2261 eps=0.040 ep_rew(30)=  -0.792  16.1 st/s ETA 0h30m elapsed 2h23m
+[14:09:01]   snapshot saved @ 120000
+[14:09:40] step 120500/150000 ( 80.3%) loss=  0.2808 eps=0.040 ep_rew(30)=  -0.501  16.0 st/s ETA 0h30m elapsed 2h24m
+[14:10:18] step 121000/150000 ( 80.7%) loss=  0.2150 eps=0.040 ep_rew(30)=  -0.509  15.9 st/s ETA 0h30m elapsed 2h24m
+[14:10:49] step 121500/150000 ( 81.0%) loss=  0.2123 eps=0.040 ep_rew(30)=  -0.651  15.9 st/s ETA 0h29m elapsed 2h25m
+[14:11:07] step 122000/150000 ( 81.3%) loss=  0.2975 eps=0.040 ep_rew(30)=  -0.618  16.1 st/s ETA 0h29m elapsed 2h25m
+[14:11:26] step 122500/150000 ( 81.7%) loss=  0.2252 eps=0.040 ep_rew(30)=  -0.594  16.3 st/s ETA 0h28m elapsed 2h25m
+[14:11:45] step 123000/150000 ( 82.0%) loss=  0.3658 eps=0.040 ep_rew(30)=  -0.577  16.5 st/s ETA 0h27m elapsed 2h26m
+[14:12:03] step 123500/150000 ( 82.3%) loss=  0.4111 eps=0.040 ep_rew(30)=  -0.514  16.6 st/s ETA 0h26m elapsed 2h26m
+[14:12:25] step 124000/150000 ( 82.7%) loss=  0.1739 eps=0.040 ep_rew(30)=  -0.592  16.8 st/s ETA 0h25m elapsed 2h26m
+[14:13:04] step 124500/150000 ( 83.0%) loss=  0.2494 eps=0.040 ep_rew(30)=  -0.733  16.6 st/s ETA 0h25m elapsed 2h27m
+[14:13:40] step 125000/150000 ( 83.3%) loss=  0.2544 eps=0.040 ep_rew(30)=  -0.783  16.5 st/s ETA 0h25m elapsed 2h28m
+[14:13:40]   snapshot saved @ 125000
+[14:14:08] step 125500/150000 ( 83.7%) loss=  0.2040 eps=0.040 ep_rew(30)=  -0.613  16.6 st/s ETA 0h24m elapsed 2h28m
+[14:14:27] step 126000/150000 ( 84.0%) loss=  0.2122 eps=0.040 ep_rew(30)=  -0.928  16.7 st/s ETA 0h23m elapsed 2h28m
+[14:14:47] step 126500/150000 ( 84.3%) loss=  0.2720 eps=0.040 ep_rew(30)=  -1.072  16.8 st/s ETA 0h23m elapsed 2h29m
+[14:15:07] step 127000/150000 ( 84.7%) loss=  0.1885 eps=0.040 ep_rew(30)=  -1.223  17.0 st/s ETA 0h22m elapsed 2h29m
+[14:15:27] step 127500/150000 ( 85.0%) loss=  0.1684 eps=0.040 ep_rew(30)=  -1.100  17.1 st/s ETA 0h21m elapsed 2h29m
+[14:15:47] step 128000/150000 ( 85.3%) loss=  0.2454 eps=0.040 ep_rew(30)=  -1.128  17.2 st/s ETA 0h21m elapsed 2h30m
+[14:16:10] step 128500/150000 ( 85.7%) loss=  0.2348 eps=0.040 ep_rew(30)=  -1.082  17.3 st/s ETA 0h20m elapsed 2h30m
+[14:16:33] step 129000/150000 ( 86.0%) loss=  0.2568 eps=0.040 ep_rew(30)=  -0.936  17.4 st/s ETA 0h20m elapsed 2h31m
+[14:16:55] step 129500/150000 ( 86.3%) loss=  0.2157 eps=0.040 ep_rew(30)=  -0.923  17.4 st/s ETA 0h19m elapsed 2h31m
+[14:17:16] step 130000/150000 ( 86.7%) loss=  0.2249 eps=0.040 ep_rew(30)=  -0.832  17.5 st/s ETA 0h18m elapsed 2h31m
+[14:17:16]   snapshot saved @ 130000
+[14:17:52] step 130500/150000 ( 87.0%) loss=  0.3940 eps=0.040 ep_rew(30)=  -0.849  17.4 st/s ETA 0h18m elapsed 2h32m
+[14:18:20] step 131000/150000 ( 87.3%) loss=  0.0901 eps=0.040 ep_rew(30)=  -0.662  17.5 st/s ETA 0h18m elapsed 2h32m
+[14:18:48] step 131500/150000 ( 87.7%) loss=  0.2453 eps=0.040 ep_rew(30)=  -0.400  17.5 st/s ETA 0h17m elapsed 2h33m
+[14:19:12] step 132000/150000 ( 88.0%) loss=  0.2429 eps=0.040 ep_rew(30)=  -0.471  17.5 st/s ETA 0h17m elapsed 2h33m
+[14:19:38] step 132500/150000 ( 88.3%) loss=  0.2955 eps=0.040 ep_rew(30)=  -0.367  17.5 st/s ETA 0h16m elapsed 2h34m
+[14:20:03] step 133000/150000 ( 88.7%) loss=  0.3403 eps=0.040 ep_rew(30)=  -0.280  17.6 st/s ETA 0h16m elapsed 2h34m
+[14:20:28] step 133500/150000 ( 89.0%) loss=  0.2129 eps=0.040 ep_rew(30)=  -0.506  17.6 st/s ETA 0h15m elapsed 2h34m
+[14:20:52] step 134000/150000 ( 89.3%) loss=  0.1228 eps=0.040 ep_rew(30)=  -0.412  17.7 st/s ETA 0h15m elapsed 2h35m
+[14:21:16] step 134500/150000 ( 89.7%) loss=  0.1741 eps=0.040 ep_rew(30)=  -0.451  17.7 st/s ETA 0h14m elapsed 2h35m
+[14:21:36] step 135000/150000 ( 90.0%) loss=  0.3132 eps=0.040 ep_rew(30)=  -0.739  17.8 st/s ETA 0h14m elapsed 2h36m
+[14:21:36]   snapshot saved @ 135000
+[14:21:55] step 135500/150000 ( 90.3%) loss=  0.3363 eps=0.040 ep_rew(30)=  -0.746  17.9 st/s ETA 0h13m elapsed 2h36m
+[14:22:13] step 136000/150000 ( 90.7%) loss=  0.2685 eps=0.040 ep_rew(30)=  -0.647  18.0 st/s ETA 0h12m elapsed 2h36m
+[14:22:32] step 136500/150000 ( 91.0%) loss=  0.2422 eps=0.040 ep_rew(30)=  -0.723  18.1 st/s ETA 0h12m elapsed 2h37m
+[14:22:50] step 137000/150000 ( 91.3%) loss=  0.2277 eps=0.040 ep_rew(30)=  -0.698  18.2 st/s ETA 0h11m elapsed 2h37m
+[14:23:09] step 137500/150000 ( 91.7%) loss=  0.2415 eps=0.040 ep_rew(30)=  -0.759  18.3 st/s ETA 0h11m elapsed 2h37m
+[14:23:27] step 138000/150000 ( 92.0%) loss=  0.1335 eps=0.040 ep_rew(30)=  -0.678  18.4 st/s ETA 0h10m elapsed 2h37m
+[14:23:46] step 138500/150000 ( 92.3%) loss=  0.2305 eps=0.040 ep_rew(30)=  -0.796  18.5 st/s ETA 0h10m elapsed 2h38m
+[14:24:05] step 139000/150000 ( 92.7%) loss=  0.2801 eps=0.040 ep_rew(30)=  -0.817  18.5 st/s ETA 0h09m elapsed 2h38m
+[14:24:24] step 139500/150000 ( 93.0%) loss=  0.2359 eps=0.040 ep_rew(30)=  -0.830  18.6 st/s ETA 0h09m elapsed 2h38m
+[14:24:43] step 140000/150000 ( 93.3%) loss=  0.3437 eps=0.040 ep_rew(30)=  -0.976  18.7 st/s ETA 0h08m elapsed 2h39m
+[14:24:43]   snapshot saved @ 140000
+[14:25:02] step 140500/150000 ( 93.7%) loss=  0.3208 eps=0.040 ep_rew(30)=  -0.653  18.8 st/s ETA 0h08m elapsed 2h39m
+[14:25:24] step 141000/150000 ( 94.0%) loss=  0.4202 eps=0.040 ep_rew(30)=  -0.557  18.8 st/s ETA 0h07m elapsed 2h39m
+[14:25:52] step 141500/150000 ( 94.3%) loss=  0.3293 eps=0.040 ep_rew(30)=  -0.717  18.8 st/s ETA 0h07m elapsed 2h40m
+[14:26:15] step 142000/150000 ( 94.7%) loss=  0.2462 eps=0.040 ep_rew(30)=  -0.641  18.8 st/s ETA 0h07m elapsed 2h40m
+[14:26:33] step 142500/150000 ( 95.0%) loss=  0.2115 eps=0.040 ep_rew(30)=  -0.602  18.9 st/s ETA 0h06m elapsed 2h41m
+[14:26:52] step 143000/150000 ( 95.3%) loss=  0.3077 eps=0.040 ep_rew(30)=  -0.403  19.0 st/s ETA 0h06m elapsed 2h41m
+[14:27:12] step 143500/150000 ( 95.7%) loss=  0.2233 eps=0.040 ep_rew(30)=  -0.480  19.0 st/s ETA 0h05m elapsed 2h41m
+[14:27:31] step 144000/150000 ( 96.0%) loss=  0.2761 eps=0.040 ep_rew(30)=  -0.356  19.1 st/s ETA 0h05m elapsed 2h41m
+[14:27:50] step 144500/150000 ( 96.3%) loss=  0.2011 eps=0.040 ep_rew(30)=  -0.348  19.2 st/s ETA 0h04m elapsed 2h42m
+[14:28:12] step 145000/150000 ( 96.7%) loss=  0.2150 eps=0.040 ep_rew(30)=  -0.476  19.2 st/s ETA 0h04m elapsed 2h42m
+[14:28:12]   snapshot saved @ 145000
+[14:28:35] step 145500/150000 ( 97.0%) loss=  0.1982 eps=0.040 ep_rew(30)=  -0.390  19.3 st/s ETA 0h03m elapsed 2h43m
+[14:28:54] step 146000/150000 ( 97.3%) loss=  0.2883 eps=0.040 ep_rew(30)=  -0.406  19.3 st/s ETA 0h03m elapsed 2h43m
+[14:29:13] step 146500/150000 ( 97.7%) loss=  0.3821 eps=0.040 ep_rew(30)=  -0.580  19.4 st/s ETA 0h03m elapsed 2h43m
+[14:29:31] step 147000/150000 ( 98.0%) loss=  0.1688 eps=0.040 ep_rew(30)=  -0.480  19.4 st/s ETA 0h02m elapsed 2h43m
+[14:29:50] step 147500/150000 ( 98.3%) loss=  0.2385 eps=0.040 ep_rew(30)=  -0.781  19.5 st/s ETA 0h02m elapsed 2h44m
+[14:30:09] step 148000/150000 ( 98.7%) loss=  0.2823 eps=0.040 ep_rew(30)=  -1.197  19.6 st/s ETA 0h01m elapsed 2h44m
+[14:30:30] step 148500/150000 ( 99.0%) loss=  0.2318 eps=0.040 ep_rew(30)=  -1.200  19.6 st/s ETA 0h01m elapsed 2h44m
+[14:30:55] step 149000/150000 ( 99.3%) loss=  0.1812 eps=0.040 ep_rew(30)=  -1.204  19.6 st/s ETA 0h00m elapsed 2h45m
+[14:31:17] step 149500/150000 ( 99.7%) loss=  0.1882 eps=0.040 ep_rew(30)=  -0.868  19.6 st/s ETA 0h00m elapsed 2h45m
+[14:31:36] step 150000/150000 (100.0%) loss=  0.2799 eps=0.040 ep_rew(30)=  -0.725  19.7 st/s ETA 0h00m elapsed 2h46m
+[14:31:36]   snapshot saved @ 150000
+[14:31:36] DONE. final checkpoint: C:\Users\HACKAT~1\AppData\Local\Temp\claude-diag-runs\wave2_resumable\agent.pt
