@@ -57,11 +57,28 @@ zero gradient steps at evaluation. **Single-seed, preliminary — not an ensembl
 
 **Provenance.** Full numbers: `phases/phase4_c0_diagnostics_150k.json` (emitted by the
 diagnostics CLI). Training log: `phases/phase4_wave2_seed901_training.log`. The checkpoint
-binary is not committed; regenerate with
+is committed at `checkpoints/wave2/iqn_seed901_150k_diagnostic.pt` (see
+`checkpoints/README.md` policy); regenerate with
 `python -m optspread.cli.train_resumable --run-dir <dir> --wave 2 --seed 901` (~2.5 h) —
 the run is resumable and progress-visible. Caveat: torch 2.9/py3.14 environment (drifted
 from the repo pin); the diagnostics are pure-numpy over the checkpoint and a resumed run
 is scientifically equivalent but not byte-identical to an uninterrupted one.
+
+### Pre-registration — experiment #1a: spectral Mean-CVaR deployment scoring
+### (committed BEFORE running the gates)
+
+Intervention: `RiskMeasure.mean_cvar(alpha=0.2, mean_weight=0.9)` at action selection on
+the frozen `checkpoints/wave2/iqn_seed901_150k_diagnostic.pt`; zero gradient steps.
+Primary predictions, derived from the C0 diagnostics above:
+- **BV_2 (Wave 2, 50 eval episodes): corr(credit_indicator, iv_rank) positive but BELOW
+  the 0.10 threshold — #1a alone FAILS at 150k**, because the mean-gap level decayed
+  negative (only ~11% of states retain a positive mean gap) even though signal ordering
+  survives.
+- **FF (Wave 0, 100 eval episodes): PASSES** (flat fraction >= 0.8) — both scoring
+  components are negative on the no-edge control.
+Falsifier: BV_2 corr > 0.10 with FF passing would mean deployment scoring alone suffices
+and candidate #2 (annealed-alpha retraining) is optional rather than necessary.
+Exploratory (reported unranked, no pass claims): mean_weight in {0.7, 0.95} and pure mean.
 
 ---
 
