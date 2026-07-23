@@ -8,6 +8,63 @@ BV_2 NOT yet passing for the primary agent — DECISION PENDING** (see the Wave-
 section). See the 2026-06-30 rich-observation section below; original 16-dim
 results follow it.
 
+## 2026-07-23 — C0 checkpoint diagnostics: distribution healthy; blindness-to-success
+## reproduced; mean-gap signal ordering robust but its level drifts negative
+
+**Motivation.** The model-candidate research (`MODEL_CANDIDATES_RESEARCH.md`, summarized in
+`MODEL_CANDIDATES_BRIEF.md`) pre-registered two free checks on a trained Wave-2 IQN
+checkpoint before any new training: (a) has the learned return distribution collapsed toward
+its mean (a published Huber-quantile-loss risk that would make CVaR action selection
+degenerate)? (b) does Q(best trade) − Q(FLAT) respond to the iv_rank entry signal under mean
+vs CVaR scoring? New tools: `optspread/eval/checkpoint_diagnostics.py`,
+`optspread/cli/diagnose_checkpoint.py`, `optspread/cli/train_resumable.py`.
+
+**Setup.** One seed (901), gate recipe (IQN width 256, alpha 0.2 CVaR deploy, eps-floor
+0.04, Wave 2, 150k steps) trained via the resumable loop; diagnostics at the 105k snapshot
+and the final 150k checkpoint; 10 eval episodes (630 states) per environment per point;
+zero gradient steps at evaluation. **Single-seed, preliminary — not an ensemble claim.**
+
+| Statistic (Wave 2 edge sim) | @105k | @150k |
+|---|---|---|
+| (a) spread(q90−q10)/value-scale | 1.82 (alive) | **1.56 (alive)** |
+| (b) mean-gap, high-signal quartile | **+0.0083** | **−0.0330** |
+| (b) mean-gap, low-signal quartile | −0.0013 | −0.0413 |
+| (b) signal ordering (hi − lo) | +0.0095 | **+0.0083** |
+| (b) CVaR-gap, high-signal | −0.0485 | −0.0812 |
+| trade-preferred states, mean / CVaR scoring | 30.5% / 10.2% | 11.3% / 3.5% |
+| Wave-0 control: mean-gap (CVaR-gap) | −0.022 (−0.064) | −0.038 (−0.110) |
+
+**Findings.**
+1. **No quantile collapse** at either point — the distributional machinery is live; the
+   published Huber-collapse pathology does not apply to this agent. Scoring-side candidates
+   have a real target.
+2. **Blindness-to-success reproduced in our own numbers at 105k:** mean values learned the
+   conditional edge (positive gap exactly in the high-signal quartile, flat on the no-edge
+   control), while CVaR-of-quantiles scoring suppressed it — ranking high-signal trades
+   *worse* than low-signal (their tails are scarier). At 105k a mean-weighted spectral
+   blend (weight ≳ 0.85 on the mean) would have traded conditionally AND stayed flat on
+   Wave 0 from a scoring change alone.
+3. **The mean-gap LEVEL drifts negative with continued training** (105k → 150k) while the
+   signal ordering stays intact (+0.0095 → +0.0083). At 150k both components are negative,
+   so no convex mean/CVaR blend trades — deployment-scoring alone is no longer sufficient
+   at the full recipe length. This extends the earlier "more steps did not help"
+   observation: on the mean-gap level, more steps actively hurt.
+4. **Implication for the candidate ranking:** spectral/Mean-CVaR scoring (#1) remains
+   necessary at deployment but is not sufficient alone; the pre-registered next experiment
+   is #1 combined with alpha-annealed training (#2), with the falsifiable prediction that
+   the mean-gap level stays positive in high-signal states when the behavior policy is not
+   tail-averse during learning. Wave-0 flatness holds under every scoring at both points.
+
+**Provenance.** Full numbers: `phases/phase4_c0_diagnostics_150k.json` (emitted by the
+diagnostics CLI). Training log: `phases/phase4_wave2_seed901_training.log`. The checkpoint
+binary is not committed; regenerate with
+`python -m optspread.cli.train_resumable --run-dir <dir> --wave 2 --seed 901` (~2.5 h) —
+the run is resumable and progress-visible. Caveat: torch 2.9/py3.14 environment (drifted
+from the repo pin); the diagnostics are pure-numpy over the checkpoint and a resumed run
+is scientifically equivalent but not byte-identical to an uninterrupted one.
+
+---
+
 ## 2026-06-30 — Wave 2 (Heston SV): GV_2 PASS, BV_2 blocked on signal/risk fork
 
 **GV_2: PASS** (mean_vrp +0.0012, skew, iv_rank_std 0.327, term-slope, mean-reversion

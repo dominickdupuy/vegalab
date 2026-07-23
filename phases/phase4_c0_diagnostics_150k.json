@@ -1,0 +1,65 @@
+{
+  "checkpoint": "C:\\Users\\HACKAT~1\\AppData\\Local\\Temp\\claude-diag-runs\\wave2_resumable\\agent.pt",
+  "wave": 2,
+  "episodes": 10,
+  "trained_wave": {
+    "n_states": 630,
+    "spread_mean": 0.28647307319709187,
+    "spread_median": 0.23423668183386326,
+    "value_scale": 0.18394685564966165,
+    "spread_to_value_ratio": 1.55736868774043,
+    "mean_scoring": {
+      "gap_all": -0.041702856373672284,
+      "gap_high_signal": -0.032975274945381564,
+      "gap_low_signal": -0.0412876119092293,
+      "pct_states_trade_preferred": 11.26984126984127
+    },
+    "cvar_scoring": {
+      "gap_all": -0.08676337327106878,
+      "gap_high_signal": -0.08121535433102635,
+      "gap_low_signal": -0.08083390877537924,
+      "pct_states_trade_preferred": 3.492063492063492
+    },
+    "cvar_alpha": 0.2
+  },
+  "trained_no_edge_control": {
+    "n_states": 630,
+    "spread_mean": 0.27704055646876746,
+    "spread_median": 0.24912691488862038,
+    "value_scale": 0.08224392250029017,
+    "spread_to_value_ratio": 3.3685231448900073,
+    "mean_scoring": {
+      "gap_all": -0.037822494971117164,
+      "gap_high_signal": -0.037822494971117164,
+      "gap_low_signal": -0.037822494971117164,
+      "pct_states_trade_preferred": 7.6190476190476195
+    },
+    "cvar_scoring": {
+      "gap_all": -0.11015275388277905,
+      "gap_high_signal": -0.11015275388277905,
+      "gap_low_signal": -0.11015275388277905,
+      "pct_states_trade_preferred": 0.0
+    },
+    "cvar_alpha": 0.2
+  },
+  "untrained_control_same_states": {
+    "n_states": 630,
+    "spread_mean": 0.00021580426749274456,
+    "spread_median": 0.00024306085833813995,
+    "value_scale": 0.0007137744420477476,
+    "spread_to_value_ratio": 0.3023423854651109,
+    "mean_scoring": {
+      "gap_all": 0.0013429164569285484,
+      "gap_high_signal": 0.001169367984823589,
+      "gap_low_signal": 0.001483559626734954,
+      "pct_states_trade_preferred": 100.0
+    },
+    "cvar_scoring": {
+      "gap_all": 0.0011736605082972578,
+      "gap_high_signal": 0.000995593887390568,
+      "gap_low_signal": 0.0013207951865297218,
+      "pct_states_trade_preferred": 99.20634920634922
+    },
+    "cvar_alpha": 0.2
+  }
+}
