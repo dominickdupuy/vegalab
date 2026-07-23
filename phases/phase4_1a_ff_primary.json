@@ -1,0 +1,13 @@
+{
+  "wave_trained": 2,
+  "agent_kind": "iqn",
+  "checkpoint": "checkpoints\\wave2\\iqn_seed901_150k_diagnostic.pt",
+  "flat_frequency": 0.8882539682539683,
+  "mean_pnl": -2838.0245095057485,
+  "pnl_ci": [
+    -4236.994796076789,
+    -1568.3180391996812
+  ],
+  "passed": true,
+  "reason": "no systematic edge detected"
+}

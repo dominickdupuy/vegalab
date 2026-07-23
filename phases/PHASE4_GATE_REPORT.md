@@ -80,6 +80,23 @@ Falsifier: BV_2 corr > 0.10 with FF passing would mean deployment scoring alone 
 and candidate #2 (annealed-alpha retraining) is optional rather than necessary.
 Exploratory (reported unranked, no pass claims): mean_weight in {0.7, 0.95} and pure mean.
 
+**Results (run immediately after the pre-registration commit, same day):**
+
+| Config | BV_2 corr(credit, iv_rank) | FF (Wave-0 flat) |
+|---|---|---|
+| mean_cvar(0.2, w=0.9) — primary | **+0.0024 → FAIL** (< 0.10) | **0.888 → PASS** |
+| mean_cvar(0.2, w=0.7) — exploratory | +0.0242 → FAIL | — |
+| mean_cvar(0.2, w=0.95) — exploratory | −0.0146 → FAIL | — |
+| pure mean — exploratory | −0.0018 → FAIL | — |
+
+**Both pre-registered predictions confirmed; the falsifier did not trigger.** Deployment
+scoring alone cannot rescue the 150k checkpoint (the mean-gap level decayed, exactly as
+the C0 diagnostics measured), while no-edge discipline survives every scoring. Conclusion
+per the pre-registered logic: **candidate #2 (annealed-alpha training) is necessary, not
+optional** — the next experiment is the #1+#2 combination (train with alpha annealed
+1.0 → 0.2, deploy with mean_cvar), 3 seeds, prediction to be pre-registered before the
+runs. Raw outputs: `phases/phase4_1a_bv2_primary.json`, `phases/phase4_1a_ff_primary.json`.
+
 ---
 
 ## 2026-06-30 — Wave 2 (Heston SV): GV_2 PASS, BV_2 blocked on signal/risk fork

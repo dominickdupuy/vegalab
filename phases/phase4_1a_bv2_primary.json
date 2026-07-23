@@ -1,0 +1,10 @@
+{
+  "wave": 2,
+  "agent_kind": "iqn",
+  "checkpoint": "checkpoints\\wave2\\iqn_seed901_150k_diagnostic.pt",
+  "statistic": "corr(credit_indicator, iv_rank)",
+  "value": 0.002414595391701413,
+  "threshold": 0.1,
+  "passed": false,
+  "n_decisions": 3150
+}
