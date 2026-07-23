@@ -10,15 +10,42 @@ from pathlib import Path
 from optspread.agents.base import Agent
 from optspread.agents.distributional.iqn_agent import IQNAgent
 from optspread.agents.distributional.qrdqn_agent import QRDQNAgent
+from optspread.agents.distributional.risk import RiskMeasure
 from optspread.agents.ppo.ppo_agent import PPOAgent
-from optspread.eval.rollout import collect_rollout_trace, wave1_credit_vrp_statistic
+from optspread.eval.rollout import (
+    collect_rollout_trace,
+    wave1_credit_vrp_statistic,
+    wave2_ivrank_statistic,
+)
 from optspread.training.curriculum_factory import wave_factory
 from optspread.training.env_factory import EnvFactory
 
 
+def deploy_risk_override(args: argparse.Namespace) -> RiskMeasure | None:
+    """Deployment-scoring override (agent-side action selection; harness untouched)."""
+    if args.deploy_risk == "checkpoint":
+        return None
+    if args.deploy_risk == "mean":
+        return RiskMeasure.mean()
+    if args.deploy_risk == "cvar":
+        return RiskMeasure.cvar(args.deploy_alpha)
+    return RiskMeasure.mean_cvar(args.deploy_alpha, args.mean_weight)
+
+
+def add_deploy_risk_args(parser: argparse.ArgumentParser) -> None:
+    parser.add_argument(
+        "--deploy-risk",
+        choices=("checkpoint", "mean", "cvar", "mean_cvar"),
+        default="checkpoint",
+        help="Override the checkpoint's action-selection risk (distributional agents only).",
+    )
+    parser.add_argument("--deploy-alpha", type=float, default=0.2)
+    parser.add_argument("--mean-weight", type=float, default=0.9)
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="Validate trained-agent curriculum behavior")
-    parser.add_argument("--wave", type=int, choices=(1,), default=1)
+    parser.add_argument("--wave", type=int, choices=(1, 2), default=1)
     parser.add_argument(
         "--agent-kind",
         choices=("ppo", "qrdqn", "iqn"),
@@ -32,9 +59,15 @@ def main() -> None:
     parser.add_argument("--episode-length", type=int, default=63)
     parser.add_argument("--min-corr", type=float, default=0.0)
     parser.add_argument("--out", type=Path)
+    add_deploy_risk_args(parser)
     args = parser.parse_args()
 
     agent = _load_agent(args.agent_kind, args.checkpoint, args.device)
+    override = deploy_risk_override(args)
+    if override is not None:
+        if not isinstance(agent, IQNAgent | QRDQNAgent):
+            raise SystemExit("--deploy-risk override requires a distributional agent")
+        agent.risk_measure = override
     factory = _factory_for_wave(args.wave, args.episode_length)
     seeds = tuple(range(args.eval_seed_start, args.eval_seed_start + args.eval_episodes))
     trace = collect_rollout_trace(agent, factory, seeds, deterministic=True)
@@ -42,6 +75,9 @@ def main() -> None:
     if args.wave == 1:
         statistic = wave1_credit_vrp_statistic(trace)
         statistic_name = "corr(credit_indicator, vrp)"
+    else:
+        statistic = wave2_ivrank_statistic(trace)
+        statistic_name = "corr(credit_indicator, iv_rank)"
     passed = math.isfinite(statistic) and statistic > args.min_corr
     payload = {
         "wave": args.wave,

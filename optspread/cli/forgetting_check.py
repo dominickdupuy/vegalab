@@ -17,6 +17,7 @@ from optspread.agents.base import Agent
 from optspread.agents.distributional.iqn_agent import IQNAgent
 from optspread.agents.distributional.qrdqn_agent import QRDQNAgent
 from optspread.agents.ppo.ppo_agent import PPOAgent
+from optspread.cli.validate_behavior import add_deploy_risk_args, deploy_risk_override
 from optspread.eval.evaluator import Evaluator
 from optspread.eval.metrics import MetricSuite
 from optspread.eval.no_edge_gate import evaluate_no_edge
@@ -34,9 +35,15 @@ def main() -> None:
     parser.add_argument("--episode-length", type=int, default=63)
     parser.add_argument("--flat-threshold", type=float, default=0.8)
     parser.add_argument("--out", type=Path)
+    add_deploy_risk_args(parser)
     args = parser.parse_args()
 
     agent = _load_agent(args.agent_kind, args.checkpoint, args.device)
+    override = deploy_risk_override(args)
+    if override is not None:
+        if not isinstance(agent, IQNAgent | QRDQNAgent):
+            raise SystemExit("--deploy-risk override requires a distributional agent")
+        agent.risk_measure = override
     factory = wave_factory(0, episode_length=args.episode_length)
     seeds = tuple(range(args.eval_seed_start, args.eval_seed_start + args.eval_episodes))
     report = Evaluator(factory, seeds, MetricSuite(n_boot=2_000)).run(agent, deterministic=True)

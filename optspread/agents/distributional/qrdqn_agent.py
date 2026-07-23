@@ -56,7 +56,11 @@ class QRDQNAgent:
             "config": self.config.model_dump(),
             "obs_dim": self.obs_dim,
             "n_actions": self.n_actions,
-            "risk": {"name": self.risk_measure.name, "alpha": self.risk_measure.alpha},
+            "risk": {
+                "name": self.risk_measure.name,
+                "alpha": self.risk_measure.alpha,
+                "mean_weight": self.risk_measure.mean_weight,
+            },
             "normalizer": self.normalizer.state_dict() if self.normalizer else None,
         }
         torch.save(payload, path)
@@ -67,7 +71,9 @@ class QRDQNAgent:
         self.target_network.load_state_dict(payload["target_network"])
         risk = payload.get("risk")
         if isinstance(risk, dict):
-            self.risk_measure = RiskMeasure(str(risk["name"]), float(risk["alpha"]))
+            self.risk_measure = RiskMeasure(
+                str(risk["name"]), float(risk["alpha"]), float(risk.get("mean_weight", 0.0))
+            )
         if self.normalizer is not None and payload.get("normalizer") is not None:
             self.normalizer.load_state_dict(payload["normalizer"])
 
@@ -78,7 +84,9 @@ class QRDQNAgent:
         if device is not None:
             config = config.model_copy(update={"device": device})
         risk_raw = payload.get("risk", {"name": "cvar", "alpha": config.cvar_alpha})
-        risk = RiskMeasure(str(risk_raw["name"]), float(risk_raw["alpha"]))
+        risk = RiskMeasure(
+            str(risk_raw["name"]), float(risk_raw["alpha"]), float(risk_raw.get("mean_weight", 0.0))
+        )
         agent = cls(int(payload["obs_dim"]), int(payload["n_actions"]), config, risk_measure=risk)
         agent.load(path)
         return agent
