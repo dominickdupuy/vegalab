@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from typing import Any
 
 import numpy as np
 from numpy.typing import NDArray
@@ -67,6 +68,32 @@ class UniformReplayBuffer:
         self.dones[idx] = 1.0 if done else 0.0
         self._pos = (self._pos + 1) % self.capacity
         self._size = min(self.capacity, self._size + 1)
+
+    def state_dict(self) -> dict[str, Any]:
+        """Serializable contents for training snapshots (only the filled region)."""
+        n = self._size
+        return {
+            "obs": self.obs[:n].copy(),
+            "next_obs": self.next_obs[:n].copy(),
+            "actions": self.actions[:n].copy(),
+            "rewards": self.rewards[:n].copy(),
+            "dones": self.dones[:n].copy(),
+            "pos": self._pos,
+            "size": n,
+        }
+
+    def load_state_dict(self, state: dict[str, Any]) -> None:
+        """Restore contents saved by :meth:`state_dict` into this buffer."""
+        n = int(state["size"])
+        if n > self.capacity:
+            raise ValueError("snapshot larger than buffer capacity")
+        self.obs[:n] = np.asarray(state["obs"], dtype=np.float32)
+        self.next_obs[:n] = np.asarray(state["next_obs"], dtype=np.float32)
+        self.actions[:n] = np.asarray(state["actions"], dtype=np.int64)
+        self.rewards[:n] = np.asarray(state["rewards"], dtype=np.float32)
+        self.dones[:n] = np.asarray(state["dones"], dtype=np.float32)
+        self._pos = int(state["pos"])
+        self._size = n
 
     def sample(self, batch_size: int, rng: np.random.Generator) -> ReplayBatch:
         if self._size == 0:
