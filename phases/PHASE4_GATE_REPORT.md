@@ -97,6 +97,33 @@ optional** — the next experiment is the #1+#2 combination (train with alpha an
 1.0 → 0.2, deploy with mean_cvar), 3 seeds, prediction to be pre-registered before the
 runs. Raw outputs: `phases/phase4_1a_bv2_primary.json`, `phases/phase4_1a_ff_primary.json`.
 
+### Pre-registration — experiment #2-seek + #1: risk-seeking behavior annealing
+### + spectral deployment (committed BEFORE the training runs)
+
+**Design correction, documented before running.** The previous paragraph's phrasing
+("train with alpha annealed 1.0 → 0.2") turned out to be vacuous on inspection of the
+config: `behavior_risk` already defaults to `"mean"`, so training exploration has been
+fully risk-neutral (the permissive endpoint) all along, and annealing *toward* 0.2 would
+only add late-training tail-aversion — the opposite of what the evidence supports. The
+verified risk-scheduling result (Jung et al. 2022; adversarially verified 2026-07-21)
+anneals from risk-SEEKING toward neutral. That is the variant implemented and tested here:
+behavior taus start in the optimistic band U(0.5, 1) and widen linearly to U(0, 1) over
+the first 100k steps (`behavior_seek_start=0.5`, `behavior_seek_decay_steps=100_000`),
+directly targeting the measured mechanism (coverage/level decay: as the greedy-mean
+behavior goes FLAT, trading transitions leave the replay and their values drift).
+
+Intervention: 3 seeds (911, 912, 913), 150k steps, config otherwise identical to the
+diagnostic run; deployment scoring `mean_cvar(alpha=0.2, mean_weight=0.9)`.
+Pre-registered predictions:
+- **P1 (mechanism):** final-checkpoint C0 diagnostics show mean-gap in the high-signal
+  quartile > 0 on >= 2/3 seeds (the decay observed at 150k without seeking is prevented).
+- **P2 (BV_2):** corr(credit_indicator, iv_rank) > 0.10 under mean_cvar(0.2, 0.9)
+  deployment on >= 2/3 seeds.
+- **P3 (FF):** Wave-0 flat fraction >= 0.8 on 3/3 seeds under the same deployment scoring.
+Falsifier: if the mean-gap still decays or BV_2 fails on >= 2 seeds, behavior-side
+coverage is not the decay mechanism — escalate to candidates #3 (condition-level
+sampling) / #5 (optimistic exploration proper) per `MODEL_CANDIDATES_BRIEF.md`.
+
 ---
 
 ## 2026-06-30 — Wave 2 (Heston SV): GV_2 PASS, BV_2 blocked on signal/risk fork
