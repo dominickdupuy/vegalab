@@ -31,6 +31,13 @@ def main() -> None:
     parser.add_argument("--hidden-size", type=int, default=256)
     parser.add_argument("--snapshot-every", type=int, default=5_000)
     parser.add_argument("--log-every", type=int, default=500)
+    parser.add_argument(
+        "--seek-start",
+        type=float,
+        default=None,
+        help="Enable risk-seeking behavior annealing: start band U(1-x, 1) -> U(0, 1).",
+    )
+    parser.add_argument("--seek-decay-steps", type=int, default=None)
     args = parser.parse_args()
 
     config = IQNConfig(
@@ -39,6 +46,8 @@ def main() -> None:
         cvar_alpha=args.cvar_alpha,
         epsilon_end=args.epsilon_end,
         hidden_sizes=(args.hidden_size,),
+        behavior_seek_start=args.seek_start,
+        behavior_seek_decay_steps=args.seek_decay_steps,
     )
     factory = wave_factory(args.wave)
     risk = RiskMeasure.cvar(config.cvar_alpha)

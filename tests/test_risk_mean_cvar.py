@@ -75,3 +75,42 @@ def test_mean_cvar_round_trips_through_checkpoint(tmp_path: Path) -> None:
     restored = IQNAgent.from_checkpoint(path)
     assert restored.risk_measure.name == "mean_cvar"
     assert restored.risk_measure.mean_weight == pytest.approx(0.9)
+
+
+def test_upper_cvar_analytic_and_reduction_to_mean() -> None:
+    assert RiskMeasure.upper_cvar(0.2).from_quantiles(VALUES, TAUS) == pytest.approx(9.5)
+    assert RiskMeasure.upper_cvar(1.0).from_quantiles(VALUES, TAUS) == pytest.approx(5.5)
+    rng = np.random.default_rng(4)
+    assert RiskMeasure.upper_cvar(0.2).from_quantiles(rng.permutation(VALUES)) == pytest.approx(9.5)
+
+
+def test_upper_cvar_tau_sampling_stays_in_upper_band() -> None:
+    config = IQNConfig(seed=8, hidden_sizes=(16,), cvar_alpha=0.2)
+    agent = IQNAgent(4, 3, config, risk_measure=RiskMeasure.cvar(0.2))
+    torch.manual_seed(1)
+    taus = agent.sample_taus(100, 50, RiskMeasure.upper_cvar(0.3))
+    assert float(taus.min()) >= 0.7
+    assert float(taus.max()) <= 1.0
+
+
+def test_behavior_seek_schedule_widens_to_risk_neutral() -> None:
+    from optspread.agents.distributional.trainer import DistributionalTrainer
+    from optspread.training.curriculum_factory import wave_factory
+
+    config = IQNConfig(
+        seed=9,
+        hidden_sizes=(16,),
+        cvar_alpha=0.2,
+        total_timesteps=1_000,
+        behavior_seek_start=0.5,
+    )
+    factory = wave_factory(0)
+    agent = IQNAgent(factory.obs_dim, factory.n_actions, config, risk_measure=RiskMeasure.cvar(0.2))
+    trainer = DistributionalTrainer(agent, factory, config, env_seed=1)
+    start = trainer.behavior_risk_at(0)
+    end = trainer.behavior_risk_at(1_000)
+    assert start.name == "upper_cvar" and start.alpha == pytest.approx(0.5)
+    assert end.name == "upper_cvar" and end.alpha == pytest.approx(1.0)
+    disabled = config.model_copy(update={"behavior_seek_start": None})
+    trainer2 = DistributionalTrainer(agent, factory, disabled, env_seed=1)
+    assert trainer2.behavior_risk_at(500).name == "mean"

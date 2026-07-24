@@ -94,7 +94,7 @@ class DistributionalTrainer:
 
         for step in range(1, cfg.total_timesteps + 1):
             epsilon = self._epsilon(step)
-            action = self._select_behavior_action(obs, epsilon)
+            action = self._select_behavior_action(obs, epsilon, risk=self.behavior_risk_at(step))
             next_obs, reward, terminated, truncated, _info = env.step(action)
             done = terminated or truncated
             self.agent.prepare_obs(next_obs.reshape(1, -1), update=True)
@@ -133,12 +133,38 @@ class DistributionalTrainer:
             return list(self.agent.network.parameters())
         raise TypeError("unsupported distributional agent")
 
-    def _select_behavior_action(self, obs: NDArray[np.float32], epsilon: float) -> int:
+    def behavior_risk_at(self, step: int) -> RiskMeasure:
+        """Behavior-policy risk attitude for this step.
+
+        With ``behavior_seek_start`` set, exploration starts optimistic (upper-tail
+        taus) and the band widens linearly to the full risk-neutral range — the
+        Jung et al. risk-scheduling direction, keeping upside transitions in
+        replay late into training. Otherwise falls back to ``behavior_risk``.
+        """
+        seek = self.config.behavior_seek_start
+        if seek is not None:
+            horizon = self.config.behavior_seek_decay_steps or self.config.total_timesteps
+            frac = min(1.0, step / horizon)
+            beta = seek + frac * (1.0 - seek)
+            return RiskMeasure.upper_cvar(beta)
+        if self.config.behavior_risk == "mean":
+            return RiskMeasure.mean()
+        return self.agent.risk_measure
+
+    def _select_behavior_action(
+        self,
+        obs: NDArray[np.float32],
+        epsilon: float,
+        risk: RiskMeasure | None = None,
+    ) -> int:
         if self.rng.random() < epsilon:
             return int(self.rng.integers(0, self.agent.n_actions))
-        risk = (
-            RiskMeasure.mean() if self.config.behavior_risk == "mean" else self.agent.risk_measure
-        )
+        if risk is None:
+            risk = (
+                RiskMeasure.mean()
+                if self.config.behavior_risk == "mean"
+                else self.agent.risk_measure
+            )
         x = self.agent.prepare_obs(obs.reshape(1, -1), update=False)
         with torch.no_grad():
             return int(self.agent.greedy_actions(x, risk=risk, use_target=False).item())

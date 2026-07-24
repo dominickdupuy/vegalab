@@ -107,6 +107,8 @@ class IQNAgent:
         u = torch.rand((batch_size, n_quantiles), device=self.device)
         if risk.name == "cvar":
             return u * risk.alpha
+        if risk.name == "upper_cvar":
+            return 1.0 - u * risk.alpha
         if risk.name == "mean_cvar":
             # Mixture sampling realizes w*E[Z] + (1-w)*CVaR_alpha in expectation:
             # each tau is full-range with prob. mean_weight, tail-restricted otherwise.

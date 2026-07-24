@@ -41,6 +41,17 @@ class RiskMeasure:
             raise ValueError("mean_weight must be in [0, 1]")
         return cls("mean_cvar", alpha, mean_weight)
 
+    @classmethod
+    def upper_cvar(cls, beta: float) -> RiskMeasure:
+        """Optimistic upper-tail mean over the top ``beta`` of the distribution.
+
+        ``beta=1`` reduces to the mean. Used as an exploration (behavior-policy)
+        risk attitude, never for deployment.
+        """
+        if not 0.0 < beta <= 1.0:
+            raise ValueError("upper-CVaR beta must be in (0, 1]")
+        return cls("upper_cvar", beta)
+
     def from_quantiles(
         self,
         values: NDArray[np.float64],
@@ -50,6 +61,16 @@ class RiskMeasure:
         arr = np.asarray(values, dtype=np.float64)
         if self.name == "mean" or (self.name != "mean_cvar" and self.alpha >= 1.0):
             return np.asarray(arr.mean(axis=-1), dtype=np.float64)
+        if self.name == "upper_cvar":
+            if taus is not None:
+                tau = np.asarray(taus, dtype=np.float64)
+                mask = tau >= 1.0 - self.alpha
+                if not np.any(mask):
+                    mask[np.argmax(tau)] = True
+                return np.asarray(arr[..., mask].mean(axis=-1), dtype=np.float64)
+            ordered = np.sort(arr, axis=-1)
+            k = max(1, int(np.floor(ordered.shape[-1] * self.alpha)))
+            return np.asarray(ordered[..., -k:].mean(axis=-1), dtype=np.float64)
         cvar = self._cvar_from_quantiles(arr, taus)
         if self.name == "mean_cvar":
             blend = self.mean_weight * arr.mean(axis=-1) + (1.0 - self.mean_weight) * cvar

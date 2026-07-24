@@ -24,6 +24,15 @@ class DistributionalConfig(BaseModel):
     epsilon_decay_steps: int = Field(default=50_000, gt=0)
     cvar_alpha: float = Field(default=0.05, gt=0.0, le=1.0)
     behavior_risk: str = "mean"
+    # Risk-seeking behavior annealing (Jung et al. 2022 schedule, adapted): when
+    # behavior_seek_start is set, exploration taus start in the OPTIMISTIC band
+    # U(1-start, 1) and the band widens linearly to the full U(0, 1) risk-neutral
+    # range over behavior_seek_decay_steps (default: total_timesteps). Counters the
+    # mean-gap level decay measured in the C0 diagnostics: an optimistic behavior
+    # policy keeps upside/trading transitions in replay late into training instead
+    # of collapsing coverage to FLAT. None disables (plain behavior_risk).
+    behavior_seek_start: float | None = Field(default=None, gt=0.0, le=1.0)
+    behavior_seek_decay_steps: int | None = Field(default=None, gt=0)
     # Risk measure used for the BOOTSTRAP target's next-action selection. "mean"
     # learns the return distribution under a risk-neutral greedy policy and applies
     # CVaR only at deployment (agent.risk_measure) -- this avoids the nested

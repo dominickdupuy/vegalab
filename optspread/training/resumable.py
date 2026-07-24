@@ -134,7 +134,9 @@ def run_resumable(
 
         for step in range(start_step + 1, cfg.total_timesteps + 1):
             epsilon = trainer._epsilon(step)
-            action = trainer._select_behavior_action(obs, epsilon)
+            action = trainer._select_behavior_action(
+                obs, epsilon, risk=trainer.behavior_risk_at(step)
+            )
             next_obs, reward, terminated, truncated, _ = env.step(action)
             done = terminated or truncated
             agent.prepare_obs(next_obs.reshape(1, -1), update=True)
